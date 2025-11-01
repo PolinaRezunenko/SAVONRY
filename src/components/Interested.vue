@@ -1,49 +1,51 @@
 <template>
 <section>
     <div class="container">
-      <div class="newproducts_content">
+      <div class="interested_content">
         <h2>Новинки</h2>
-        <div class="newproducts_cards">
-          <div class="newproducts_card">
-            <div class="newproducts_card_top">
-              <img src="@/assets/images/newprod1.png" alt="1" class="newproducts_card_image">
-              <p class="newproducts_card_name">Набор Ванильный эспрессо (уход за телом)</p>
+        <div class="interested_cards">
+          <div class="interested_card">
+            <div class="interested_card_top">
+              <img src="@/assets/images/interested1.png" alt="1" class="interested_card_image">
+              <p class="interested_card_name">Набор Ванильный эспрессо (уход за телом)</p>
             </div>
-            <div class="newproducts_card_bot">
-              <div class="newproducts_card_price">740 ₽</div>
-              <button class="newproducts_card_button">В корзину</button>
-            </div>
-          </div>
-          <div class="newproducts_card">
-            <div class="newproducts_card_top">
-              <img src="@/assets/images/newprod2.png" alt="2" class="newproducts_card_image">
-              <p class="newproducts_card_name">Набор Ванильный эспрессо (уход за телом)</p>
-            </div>
-            <div class="newproducts_card_bot">
-              <div class="newproducts_card_price">740 ₽</div>
-              <button class="newproducts_card_button">В корзину</button>
+            <div class="interested_card_bot">
+              <div class="interested_card_price">740 ₽</div>
+              <button class="interested_card_button">В корзину</button>
             </div>
           </div>
-          <div class="newproducts_card">
-            <div class="newproducts_card_top">
-              <img src="@/assets/images/newprod3.png" alt="3" class="newproducts_card_image">
-              <p class="newproducts_card_name">Набор Ванильный эспрессо (уход за телом)</p>
+
+          <div class="interested_card">
+            <div class="interested_card_top">
+              <img src="@/assets/images/interested2.png" alt="2" class="interested_card_image">
+              <p class="interested_card_name">Набор Ванильный эспрессо (уход за телом)</p>
             </div>
-            <div class="newproducts_card_bot">
-              <div class="newproducts_card_price">740 ₽</div>
-              <button class="newproducts_card_button">В корзину</button>
-            </div>
-          </div>
-          <div class="newproducts_card">
-            <div class="newproducts_card_top">
-              <img src="@/assets/images/newprod4.png" alt="4" class="newproducts_card_image">
-              <p class="newproducts_card_name">Набор Ванильный эспрессо (уход за телом)</p>
-            </div>
-            <div class="newproducts_card_bot">
-              <div class="newproducts_card_price">740 ₽</div>
-              <button class="newproducts_card_button">В корзину</button>
+            <div class="interested_card_bot">
+              <div class="interested_card_price">740 ₽</div>
+              <button class="interested_card_button">В корзину</button>
             </div>
           </div>
+
+          <div class="interested_card">
+            <div class="interested_card_top">
+              <img src="@/assets/images/interested3.png" alt="3" class="interested_card_image">
+              <p class="interested_card_name">Набор Ванильный эспрессо (уход за телом)</p>
+            </div>
+            <div class="interested_card_bot">
+              <div class="interested_card_price">740 ₽</div>
+              <button class="interested_card_button">В корзину</button>
+            </div>
+          </div>
+
+          <div class="interested_card">
+            <div class="interested_card_top">
+              <img src="@/assets/images/interested4.png" alt="4" class="interested_card_image">
+              <p class="interested_card_name">Набор Ванильный эспрессо (уход за телом)</p>
+            </div>
+            <div class="interested_card_bot">
+              <div class="interested_card_price">740 ₽</div>
+              <button class="interested_card_button">В корзину</button>
+            </div>
         </div>
       </div>
     </div>
