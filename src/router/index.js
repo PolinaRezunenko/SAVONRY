@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router' //Импортируем фабрики из vue-router. экземпляр роутера и включение хистори апи
 
-import Home from '/components/Home.vue'
+import Home from '@/components/Home.vue'
+// import Home from '..Home.vue'
 import Promotions from '../components/Promotions.vue'
 import Face from '../components/Face.vue'
 import Profile from '../components/Profile.vue'
@@ -34,12 +35,13 @@ const routes = [
   { path: '/men', name: 'Men', component: Men },
   { path: '/gifts', name: 'Gifts', component: Gifts },
   { path: '/series', name: 'Series', component: Series },
+  // { path: '/newproducts', name: 'NewProducts', component: Home }, // Та же страница, но можно сделать отдельную
   { path: '/accessories', name: 'Accessories', component: Accessories }
 ]
 
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(), // красивые адреса без #
-  routes  //таблица
+  routes,  //таблица
 })
 
 export default router

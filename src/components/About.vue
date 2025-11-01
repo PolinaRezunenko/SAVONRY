@@ -7,3 +7,9 @@
 
   </div> -->
 </template>
+
+<style scoped>
+.main_photo h1 {
+  color: black;
+}
+</style>

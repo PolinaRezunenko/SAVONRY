@@ -45,7 +45,7 @@
           <RouterLink :to="{ name: 'Men'}">ДЛЯ НЕГО</RouterLink>
           <RouterLink :to="{ name: 'Gifts'}">ПОДАРКИ</RouterLink>
           <RouterLink :to="{ name: 'Series'}">СЕРИИ</RouterLink>
-          <RouterLink :to="{ name: 'Accessories '}">АКСЕССУАРЫ</RouterLink>
+          <RouterLink :to="{ name: 'Accessories'}">АКСЕССУАРЫ</RouterLink>
         </div>
       </nav>
     </header>
@@ -82,13 +82,17 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
 }
-
 .top-nav-left{
-  display: flex;
+  display: flex; 
+  gap: 33px; 
+}
+
+.top-nav-left a{
+  text-decoration: none;
   color: rgb(0, 0, 0);
-  align-items: center;
+  /* align-items: center; */
   padding: 40px 0px;
-  font-family: Mulish-Regular-400;
+  font-family: "Mulish-Regular-400";
   font-weight: 400;
   font-size: 16px;
   gap: 33px;
@@ -109,29 +113,32 @@ export default {
 
 .main-header {
   background-color: rgb(0, 0, 0);
-  border-bottom: 1px solid #eaeaea;
   height: 52px;
+  text-decoration: none;
 }
 
 .main-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  /* display: flex; */
+  /* justify-content: space-between;
+  align-items: center; */
   max-width: 1200px;
   margin: 0 auto;
-  
 }
 
-
-.nav-links {
+.nav-links{
   display: flex;
-  font-family: Mulish-Regular-400;
-  font-weight: 400;
-  font-size: 16px ;
-  color: white;
-  padding: 16px 0;
   gap: 83px;
 }
+
+.nav-links a {
+  font-family: "Mulish-Regular-400";
+  font-weight: 400;
+  font-size: 16px ;
+  color: rgb(255, 255, 255);
+  padding: 16px 0;
+  text-decoration: none;
+}
+
 
  
   
