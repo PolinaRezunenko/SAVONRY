@@ -22,7 +22,7 @@
             <!-- Правая часть - фотография -->
             <div class="image-container">
                 <div class="image-wrapper">
-                    <img src="scrab-img.png" alt="скраб" class="product-image">
+                    <img src="@/assets/advantages.png" alt="скраб" class="product-image">
                 </div>
             </div>
         </div>
