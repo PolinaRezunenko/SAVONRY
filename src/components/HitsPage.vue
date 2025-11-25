@@ -2,47 +2,48 @@
   <section>
     <div class="container">
       <Breadcrumbs />
-      <div class="newproducts-page">
-        <h1>Новинки</h1>
+      <div class="hits-page">
+        <h1>Хиты продаж</h1>
         
         <div v-if="loading" class="loading">
-          <p>Загрузка новинок...</p>
+          <p>Загрузка хитов...</p>
         </div>
 
-        <div v-else-if="newProducts.length === 0" class="empty-products">
-          <p>Новинок пока нет</p>
+        <div v-else-if="hitProducts.length === 0" class="empty-products">
+          <p>Хитов продаж пока нет</p>
           <RouterLink to="/" class="continue-shopping">Вернуться на главную</RouterLink>
         </div>
 
-        <div v-else class="newproducts-content">
-          <div class="newproducts-grid">
+        <div v-else class="hits-content">
+          <div class="hits-grid">
             <div 
-              v-for="product in newProducts" 
+              v-for="product in hitProducts" 
               :key="product.id" 
-              class="newproducts-card"
+              class="hits-card"
             >
               <RouterLink 
                 :to="{ name: 'ProductDetail', params: { id: product.id } }"
-                class="newproducts-card-link"
+                class="hits-card-link"
               >
-                <div class="newproducts-card-top">
+                <div class="hits-card-top">
                   <img 
                     :src="product.image_url || '/images/placeholder.jpg'" 
                     :alt="product.name" 
-                    class="newproducts-card-image"
+                    class="hits-card-image"
                     @error="handleImageError"
                   >
-                  <div class="newproducts-badge">NEW</div>
+                  <div class="hits-badge">ХИТ</div>
+                  <div v-if="product.is_new" class="new-badge">NEW</div>
                 </div>
-                <p class="newproducts-card-name">{{ product.name }}</p>
+                <p class="hits-card-name">{{ product.name }}</p>
               </RouterLink>
-              <div class="newproducts-card-bot">
-                <div class="newproducts-price-section">
-                  <div class="newproducts-card-price">{{ product.price }} ₽</div>
-                  <div v-if="product.old_price" class="newproducts-old-price">{{ product.old_price }} ₽</div>
+              <div class="hits-card-bot">
+                <div class="hits-price-section">
+                  <div class="hits-card-price">{{ product.price }} ₽</div>
+                  <div v-if="product.old_price" class="hits-old-price">{{ product.old_price }} ₽</div>
                 </div>
                 <button 
-                  class="newproducts-card-button"
+                  class="hits-card-button"
                   @click="addToCart(product)"
                   :disabled="isProductLoading(product.id)"
                   :class="{ 'in-cart': getProductQuantity(product.id) > 0 }"
@@ -65,8 +66,7 @@
     </div>
   </section>
 
-  <!-- Добавляем секцию хитов -->
-  <ProductHits />
+
 </template>
 
 <script>
@@ -77,13 +77,13 @@ import Breadcrumbs from '@/components/Breadcrumbs.vue'
 import ProductHits from '@/components/ProductHits.vue'
 
 export default {
-  name: 'NewProducts',
+  name: 'HitsPage',
   components: {
     Breadcrumbs,
     ProductHits
   },
   setup() {
-    const newProducts = ref([])
+    const hitProducts = ref([])
     const loading = ref(true)
     const { 
       handleAddToCart, 
@@ -92,22 +92,25 @@ export default {
       loadCartItems 
     } = useCart()
 
-    // Загрузка всех новинок из БД
-    const loadNewProducts = async () => {
+    // Загрузка всех хитов из БД - используем is_popular вместо is_hit
+    const loadHitProducts = async () => {
       try {
         loading.value = true
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .eq('is_new', true)
+          .eq('is_popular', true)
           .eq('is_active', true)
           .order('created_at', { ascending: false })
 
         if (error) throw error
-        newProducts.value = data || []
+        hitProducts.value = data || []
+        
+        console.log('Найдено хитов:', hitProducts.value.length)
+        console.log('Хиты:', hitProducts.value)
       } catch (error) {
-        console.error('Ошибка загрузки новинок:', error)
-        newProducts.value = []
+        console.error('Ошибка загрузки хитов:', error)
+        hitProducts.value = []
       } finally {
         loading.value = false
       }
@@ -122,12 +125,12 @@ export default {
     }
 
     onMounted(async () => {
-      await loadNewProducts()
+      await loadHitProducts()
       await loadCartItems()
     })
 
     return {
-      newProducts,
+      hitProducts,
       loading,
       addToCart,
       handleImageError,
@@ -139,13 +142,13 @@ export default {
 </script>
 
 <style scoped>
-.newproducts-page {
+.hits-page {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
 }
 
-.newproducts-page h1 {
+.hits-page h1 {
   font-family: "Raleway-SemiBold";
   font-weight: 600;
   font-size: 48px;
@@ -180,14 +183,14 @@ export default {
   color: white;
 }
 
-.newproducts-grid {
+.hits-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 40px;
   justify-items: center;
 }
 
-.newproducts-card {
+.hits-card {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -196,24 +199,24 @@ export default {
   transition: transform 0.3s ease;
 }
 
-.newproducts-card:hover {
+.hits-card:hover {
   transform: translateY(-5px);
 }
 
-.newproducts-card-top {
+.hits-card-top {
   height: 350px;
   margin-bottom: 18px;
   position: relative;
 }
 
-.newproducts-card-image {
+.hits-card-image {
   width: 100%;
   height: 286px;
   object-fit: cover;
   border-radius: 5px;
 }
 
-.newproducts-card-bot {
+.hits-card-bot {
   display: flex;
   width: 100%;
   height: 44px;
@@ -222,7 +225,7 @@ export default {
   gap: 0;
 }
 
-.newproducts-price-section {
+.hits-price-section {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -231,7 +234,7 @@ export default {
   flex-shrink: 0;
 }
 
-.newproducts-card-price {
+.hits-card-price {
   color: #000000;
   font-size: 24px;
   height: 20px;
@@ -242,7 +245,7 @@ export default {
   line-height: 1;
 }
 
-.newproducts-old-price {
+.hits-old-price {
   text-decoration: line-through;
   color: #999;
   font-size: 14px;
@@ -251,7 +254,7 @@ export default {
   margin-top: 2px;
 }
 
-.newproducts-card-name {
+.hits-card-name {
   color: #000000;
   margin-bottom: 10px;
   font-family: "Mulish-Regular-400";
@@ -265,7 +268,7 @@ export default {
   align-items: flex-start;
 }
 
-.newproducts-card-button {
+.hits-card-button {
   width: 142px;
   height: 44px;
   background-color: transparent;
@@ -285,28 +288,28 @@ export default {
   justify-content: center;
 }
 
-.newproducts-card-button:hover:not(:disabled) {
+.hits-card-button:hover:not(:disabled) {
   background-color: #000000;
   color: #F4F6F5;
 }
 
-.newproducts-card-button.in-cart {
+.hits-card-button.in-cart {
   background-color: #000000;
   color: #F4F6F5;
 }
 
-.newproducts-card-button:disabled {
+.hits-card-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.newproducts-card-link {
+.hits-card-link {
   text-decoration: none;
   color: inherit;
   display: block;
 }
 
-.newproducts-badge {
+.hits-badge {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -321,44 +324,59 @@ export default {
   letter-spacing: 0.5px;
 }
 
+.new-badge {
+  position: absolute;
+  top: 10px;
+  left: 70px;
+  background: #ff4444;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-family: "Mulish-Regular-400";
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
-  .newproducts-grid {
+  .hits-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
   }
   
-  .newproducts-card {
+  .hits-card {
     width: 100%;
   }
   
-  .newproducts-card-bot {
+  .hits-card-bot {
     flex-direction: column;
     height: auto;
     gap: 10px;
     align-items: stretch;
   }
   
-  .newproducts-card-button {
+  .hits-card-button {
     width: 100%;
   }
   
-  .newproducts-price-section {
+  .hits-price-section {
     align-items: center;
     text-align: center;
   }
 }
 
 @media (max-width: 480px) {
-  .newproducts-grid {
+  .hits-grid {
     grid-template-columns: 1fr;
   }
   
-  .newproducts-page {
+  .hits-page {
     padding: 20px 10px;
   }
   
-  .newproducts-page h1 {
+  .hits-page h1 {
     font-size: 36px;
     margin-bottom: 40px;
   }

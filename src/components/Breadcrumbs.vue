@@ -30,13 +30,16 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { supabase } from '@/lib/supabase'
 
 export default {
   name: 'Breadcrumbs',
   setup() {
     const route = useRoute()
+    const productName = ref('')
+    const seriesName = ref('')
     
     const breadcrumbs = computed(() => {
       const crumbs = []
@@ -63,45 +66,21 @@ export default {
           title: 'О нас',
           path: '/about'
         })
-      } else if (route.name === 'Face') {
+      } else if (route.name === 'CategoryPage') {
+        const categoryMap = {
+          'face': 'Лицо',
+          'bath': 'Ванна и душ', 
+          'body': 'Тело',
+          'hair': 'Волосы',
+          'men': 'Для него',
+          'gifts': 'Подарки',
+          'series': 'Серии',
+          'accessories': 'Аксессуары'
+        }
+        const categoryTitle = categoryMap[route.params.category] || 'Категория'
         crumbs.push({
-          title: 'Лицо',
-          path: '/face'
-        })
-      } else if (route.name === 'Catalog1') {
-        crumbs.push({
-          title: 'Ванна и душ',
-          path: '/bath'
-        })
-      } else if (route.name === 'Body') {
-        crumbs.push({
-          title: 'Тело',
-          path: '/body'
-        })
-      } else if (route.name === 'Hair') {
-        crumbs.push({
-          title: 'Волосы',
-          path: '/hair'
-        })
-      } else if (route.name === 'Men') {
-        crumbs.push({
-          title: 'Для него',
-          path: '/men'
-        })
-      } else if (route.name === 'Gifts') {
-        crumbs.push({
-          title: 'Подарки',
-          path: '/gifts'
-        })
-      } else if (route.name === 'Series') {
-        crumbs.push({
-          title: 'Серии',
-          path: '/series'
-        })
-      } else if (route.name === 'Accessories') {
-        crumbs.push({
-          title: 'Аксессуары',
-          path: '/accessories'
+          title: categoryTitle,
+          path: `/category/${route.params.category}`
         })
       } else if (route.name === 'Search') {
         crumbs.push({
@@ -123,30 +102,94 @@ export default {
           title: 'Корзина',
           path: '/cart'
         })
+      } else if (route.name === 'SeriesPage') {
+        crumbs.push({
+          title: 'Серии',
+          path: '/series'
+        })
+      } else if (route.name === 'SeriesDetail') {
+        crumbs.push({
+          title: 'Серии',
+          path: '/series'
+        })
+        if (seriesName.value) {
+          crumbs.push({
+            title: seriesName.value,
+            path: route.path
+          })
+        }
       }
       
-      // Для страниц товаров можно добавить дополнительную логику
-      if (route.params.id) {
-        // Здесь можно получить название товара по ID
-        const productName = getProductName(route.params.id)
-        crumbs.push({
-          title: productName,
-          path: route.path
-        })
+      // Для страниц товаров
+      if (route.name === 'ProductDetail' && route.params.id) {
+        // Добавляем категорию товара, если известна
+        if (productName.value) {
+          crumbs.push({
+            title: productName.value,
+            path: route.path
+          })
+        } else {
+          // Временно показываем "Товар", пока загружается название
+          crumbs.push({
+            title: 'Товар',
+            path: route.path
+          })
+        }
       }
       
       return crumbs
     })
     
-    const getProductName = (id) => {
-      // Заглушка - в реальном приложении здесь будет запрос к API или store
-      const products = {
-        '1': 'Крем для лица',
-        '2': 'Шампунь для волос',
-        '3': 'Гель для душа'
+    // Загрузка названия товара для страницы товара
+    const loadProductName = async (productId) => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('name')
+          .eq('id', productId)
+          .single()
+        
+        if (error) throw error
+        productName.value = data?.name || 'Товар'
+      } catch (error) {
+        console.error('Ошибка загрузки названия товара:', error)
+        productName.value = 'Товар'
       }
-      return products[id] || `Товар #${id}`
     }
+
+    // Загрузка названия серии для страницы серии
+    const loadSeriesName = async (seriesId) => {
+      try {
+        const { data, error } = await supabase
+          .from('series')
+          .select('name')
+          .eq('id', seriesId)
+          .single()
+        
+        if (error) throw error
+        seriesName.value = data?.name || 'Серия'
+      } catch (error) {
+        console.error('Ошибка загрузки названия серии:', error)
+        seriesName.value = 'Серия'
+      }
+    }
+    
+    // Следим за изменением ID товара в маршруте
+    watch(() => route.params.id, (newId) => {
+      if (newId && route.name === 'ProductDetail') {
+        loadProductName(newId)
+      }
+      if (newId && route.name === 'SeriesDetail') {
+        loadSeriesName(newId)
+      }
+    }, { immediate: true })
+
+    // Также следим за изменением самого маршрута
+    watch(() => route.name, (newName) => {
+      if (newName === 'SeriesDetail' && route.params.id) {
+        loadSeriesName(route.params.id)
+      }
+    }, { immediate: true })
     
     return {
       breadcrumbs

@@ -1,23 +1,20 @@
 <template>
     <!-- Верхний хедер -->
-     
 <header class="top-header">
-  
-  <nav class="top-nav">
-    <div class="top-nav-left">
-      <RouterLink :to="{ name: 'Promotions'}">АКЦИИ</RouterLink>
-      <RouterLink :to="{ name: 'NewProducts'}">НОВИНКИ</RouterLink>
-      <RouterLink :to="{ name: 'About'}">О НАС</RouterLink>
-    </div>
-    
+   <nav class="top-nav">
+      <div class="top-nav-left">
+        <RouterLink :to="{ name: 'Promotions'}">АКЦИИ</RouterLink>
+        <RouterLink to="/newproducts">НОВИНКИ</RouterLink>
+        <RouterLink :to="{ name: 'About'}">О НАС</RouterLink>
+      </div>
+      
       <RouterLink :to="{ name: 'Home'}">
-          <div class="header_logo">
-            <img src="./assets/icons/logo1.svg" alt="лого">
+        <div class="header_logo">
+          <img src="./assets/icons/logo1.svg" alt="лого">
         </div>
       </RouterLink> 
-    
 
-    <div class="top-nav-right">
+      <div class="top-nav-right">
         <RouterLink :to="{ name: 'Search'}" class="search_icon">
           <img src="./assets/icons/search.svg" alt="поиск">
         </RouterLink>       
@@ -27,40 +24,39 @@
         <RouterLink :to="{ name: 'Profile'}" class="profile_icon">
           <img src="./assets/icons/lk.svg" alt="профиль">
         </RouterLink>
-        <RouterLink :to="{ name: 'Cart'}" class="profile_icon">
+        <RouterLink :to="{ name: 'Cart'}" class="profile_icon cart-icon">
           <img src="./assets/icons/cart.svg" alt="корзина">
+          <span v-if="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
         </RouterLink>
-    </div>
-  </nav>
+      </div>
+    </nav>
 </header>
 
 <!-- Основной хедер -->
 <header class="main-header">
   <nav class="main-nav">
     <div class="nav-links">
-      <RouterLink :to="{ name: 'Face'}">ЛИЦО</RouterLink>
-      <RouterLink :to="{ name: 'Catalog1'}">ВАННА И ДУШ</RouterLink>
-      <RouterLink :to="{ name: 'Body'}">ТЕЛО</RouterLink>
-      <RouterLink :to="{ name: 'Hair'}">ВОЛОСЫ</RouterLink>
-      <RouterLink :to="{ name: 'Men'}">ДЛЯ НЕГО</RouterLink>
-      <RouterLink :to="{ name: 'Gifts'}">ПОДАРКИ</RouterLink>
-      <RouterLink :to="{ name: 'Series'}">СЕРИИ</RouterLink>
-      <RouterLink :to="{ name: 'Accessories'}">АКСЕССУАРЫ</RouterLink>
+      <RouterLink :to="{ name: 'CategoryPage', params: { category: 'face' } }">ЛИЦО</RouterLink>
+      <RouterLink :to="{ name: 'CategoryPage', params: { category: 'bath' } }">ВАННА И ДУШ</RouterLink>
+      <RouterLink :to="{ name: 'CategoryPage', params: { category: 'body' } }">ТЕЛО</RouterLink>
+      <RouterLink :to="{ name: 'CategoryPage', params: { category: 'hair' } }">ВОЛОСЫ</RouterLink>
+      <RouterLink :to="{ name: 'CategoryPage', params: { category: 'men' } }">ДЛЯ НЕГО</RouterLink>
+      <RouterLink :to="{ name: 'CategoryPage', params: { category: 'gifts' } }">ПОДАРКИ</RouterLink>
+      <RouterLink :to="{ name: 'SeriesPage' }">СЕРИИ</RouterLink>
+      <RouterLink :to="{ name: 'CategoryPage', params: { category: 'accessories' } }">АКСЕССУАРЫ</RouterLink>
     </div>
   </nav>
 </header>
     
-    
-
-    <!-- активная страница -->
-  <RouterView />  
+<!-- активная страница -->
+<RouterView />  
 
 <footer class="footer">
   <div class="brand-section">
           <div class="footer_logo">
             <img src="./assets/icons/logo2.svg" alt="лого">
           </div>
-      <p >SAVONRY - бренд высококачественной и эффективной натуральной косметики с чистым растительным составом</p>
+      <p >SAVONRY - бренд высококачественной и эффективной натуральной косметики с чистым растительным составом</p>
       <div class="social-links">
           <a href="https://web.whatsapp.com/" class="social-link vk" target="_blank"  rel="noopener noreferrer">
               <img src="./assets/icons/wapp.svg" alt="whatsapp" >
@@ -115,15 +111,77 @@
       </div>
   </div>
 </footer>
-  </template>
+</template>
 
 <script>
+import { useCart } from '@/composables/useCart'
+import { supabase } from '@/lib/supabase'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
 export default {
-  name: 'App'
+  name: 'App',
+  setup() {
+    const categories = ref([])
+    const { cartCount, loadCartCount } = useCart()
+    const router = useRouter()
+    const route = useRoute()
+
+    const scrollToNewProducts = () => {
+      // Если мы уже на главной странице
+      if (route.path === '/') {
+        const element = document.getElementById('new-products')
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          })
+        }
+      } else {
+        // Если не на главной, переходим на главную с хэшем
+        router.push('/#new-products')
+        
+        // После перехода скроллим к секции
+        setTimeout(() => {
+          const element = document.getElementById('new-products')
+          if (element) {
+            element.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            })
+          }
+        }, 100)
+      }
+    }
+
+    const loadCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .order('sort_order', { ascending: true })
+        
+        if (error) throw error
+        categories.value = data || []
+        console.log('Загружено категорий:', categories.value.length)
+      } catch (error) {
+        console.error('Ошибка загрузки категорий:', error)
+      }
+    }
+
+    onMounted(() => {
+      loadCategories()
+      loadCartCount()
+    })
+
+    return {
+      categories,
+      cartCount,
+      scrollToNewProducts
+    }
+  }
 }
 </script>
-
-
 
 <style scoped>
 /* Базовые стили для примера */
@@ -155,6 +213,21 @@ export default {
   gap: 33px;
 }
 
+/* Стиль для ссылки новинок */
+.nav-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  padding: 40px 0px;
+  font-family: "Mulish-Regular-400";
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.nav-link:hover {
+  color: #666;
+}
+
 .header_logo{
   width: 170px;
   height: 54px;
@@ -166,6 +239,42 @@ export default {
   align-items: center;
   padding: 34px 0px;
   gap: 24px;
+}
+
+/* Стили для иконки корзины со счетчиком */
+.cart-icon {
+  position: relative;
+  text-decoration: none; /* Убираем подчеркивание у всей ссылки корзины */
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #000;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important; /* Убираем подчеркивание у счетчика */
+  font-family: "Mulish-Regular-400";
+  font-weight: 400;
+}
+
+/* Убираем подчеркивание у всех ссылок в верхней навигации */
+.top-nav-left a,
+.top-nav-right a {
+  text-decoration: none;
+}
+
+/* Убираем подчеркивание при наведении */
+.top-nav-left a:hover,
+.top-nav-right a:hover {
+  text-decoration: none;
 }
 
 .main-header {

@@ -2,57 +2,38 @@
   <section>
     <div class="container">
       <Breadcrumbs />
-      <div class="promotions-content">
-        <h1>Акции</h1>
-        <p class="promotions-subtitle">Специальные предложения и выгодные скидки</p>
-        
-        <div v-if="loading" class="loading-state">
-          <div class="loading-spinner"></div>
-          <p>Загружаем акционные товары...</p>
-        </div>
-        
-        <div v-else-if="products.length === 0" class="empty-state">
-          <p>В данный момент акционных товаров нет</p>
-        </div>
-        
-        <div v-else class="promotions-cards">
+      <div class="category-content">
+        <h1>{{ categoryTitle }}</h1>
+        <div class="category-cards">
           <div 
             v-for="product in products" 
             :key="product.id" 
-            class="promotions-card"
+            class="category-card"
           >
             <RouterLink 
               :to="{ name: 'ProductDetail', params: { id: product.id } }"
-              class="promotions-card-link"
+              class="category-card-link"
             >
-              <div class="promotions-card-top">
+              <div class="category-card-top">
                 <img 
                   :src="product.image_url || '/images/placeholder.jpg'" 
                   :alt="product.name" 
-                  class="promotions-card-image"
+                  class="category-card-image"
                   @error="handleImageError"
                 >
-                <!-- Бейджи как в CategoryPage -->
                 <div v-if="product.is_new" class="category-badge new">NEW</div>
-                <div class="category-badge sale">SALE</div>
+                <div v-if="product.is_promotion" class="category-badge sale">SALE</div>
                 <div v-if="product.is_hit" class="category-badge hit">ХИТ</div>
-                
-                <!-- Дополнительный бейдж скидки -->
-                <div v-if="product.old_price" class="discount-badge">
-                  -{{ calculateDiscount(product) }}%
-                </div>
               </div>
-              <p class="promotions-card-name">{{ product.name }}</p>
+              <p class="category-card-name">{{ product.name }}</p>
             </RouterLink>
-            <div class="promotions-card-bot">
-              <div class="promotions-price-section">
-                <div class="promotions-card-price">{{ formatPrice(product.price) }} ₽</div>
-                <div v-if="product.old_price" class="promotions-old-price">
-                  {{ formatPrice(product.old_price) }} ₽
-                </div>
+            <div class="category-card-bot">
+              <div class="category-price-section">
+                <div class="category-card-price">{{ product.price }} ₽</div>
+                <div v-if="product.old_price" class="category-old-price">{{ product.old_price }} ₽</div>
               </div>
               <button 
-                class="promotions-card-button"
+                class="category-card-button"
                 @click="addToCart(product)"
                 :disabled="isProductLoading(product.id)"
                 :class="{ 'in-cart': getProductQuantity(product.id) > 0 }"
@@ -74,26 +55,27 @@
     </div>
   </section>
 
-  <!-- Секция хитов как в CategoryPage -->
+  <!-- Добавляем секцию хитов -->
   <ProductHits />
 </template>
 
 <script>
 import { useCart } from '@/composables/useCart'
 import { supabase } from '@/lib/supabase'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import ProductHits from '@/components/ProductHits.vue'
 import Breadcrumbs from '@/components/Breadcrumbs.vue'
 
 export default {
-  name: 'PromotionsPage',
+  name: 'CategoryPage',
   components: {
     ProductHits,
     Breadcrumbs
   },
   setup() {
     const products = ref([])
-    const loading = ref(true)
+    const route = useRoute()
     const { 
       handleAddToCart, 
       getProductQuantity, 
@@ -101,38 +83,47 @@ export default {
       loadCartItems 
     } = useCart()
 
-    // Загрузка только акционных товаров
-    const loadPromotionProducts = async () => {
+    const categoryTitle = computed(() => {
+      const categoryMap = {
+        'face': 'Лицо',
+        'bath': 'Ванна и душ', 
+        'body': 'Тело',
+        'hair': 'Волосы',
+        'men': 'Для него',
+        'gifts': 'Подарки',
+        'series': 'Серии',
+        'accessories': 'Аксессуары'
+      }
+      return categoryMap[route.params.category] || 'Каталог'
+    })
+
+    const loadProducts = async () => {
       try {
-        loading.value = true
-        
+        // Находим ID категории по slug
+        const { data: categoryData } = await supabase
+          .from('categories')
+          .select('id')
+          .eq('slug', route.params.category)
+          .single()
+
+        if (!categoryData) {
+          console.log('Категория не найдена')
+          products.value = []
+          return
+        }
+
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .eq('is_promotion', true)
-          .eq('is_active', true)
+          .eq('category_id', categoryData.id)
           .order('created_at', { ascending: false })
 
         if (error) throw error
         products.value = data || []
       } catch (error) {
-        console.error('Ошибка загрузки акционных товаров:', error)
+        console.error('Ошибка загрузки товаров:', error)
         products.value = []
-      } finally {
-        loading.value = false
       }
-    }
-
-    // Расчет скидки в процентах
-    const calculateDiscount = (product) => {
-      if (!product.old_price) return 0
-      const discount = ((product.old_price - product.price) / product.old_price) * 100
-      return Math.round(discount)
-    }
-
-    // Форматирование цены
-    const formatPrice = (price) => {
-      return parseFloat(price).toFixed(0)
     }
 
     const addToCart = async (product) => {
@@ -140,35 +131,37 @@ export default {
     }
 
     const handleImageError = (event) => {
-      event.target.src = '/images/placeholder.jpg'
+      event.target.src = '@/assets/images/placeholder.jpg'
     }
 
     onMounted(async () => {
-      await loadPromotionProducts()
-      await loadCartItems()
+      await loadProducts()
+      await loadCartItems() // Загружаем корзину при старте
+    })
+
+    watch(() => route.params.category, () => {
+      loadProducts()
     })
 
     return {
       products,
-      loading,
+      categoryTitle,
       addToCart,
       handleImageError,
       getProductQuantity,
-      isProductLoading,
-      calculateDiscount,
-      formatPrice
+      isProductLoading
     }
   }
 }
 </script>
 
 <style scoped>
-.promotions-card-button.in-cart {
+.category-card-button.in-cart {
   background-color: #000000;
   color: #F4F6F5;
 }
 
-.promotions-card-button:disabled {
+.category-card-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -179,7 +172,7 @@ export default {
   margin: 0 auto;
 }
 
-.promotions-content h1{
+.category-content h1{
   color: black;
   font-family: "Raleway-SemiBold";
   font-weight: 600;
@@ -187,15 +180,7 @@ export default {
   padding: 95px 0px 40px 360px;
 }
 
-.promotions-subtitle {
-  color: #666;
-  font-family: "Mulish-Regular-400";
-  font-size: 18px;
-  padding: 0 0 40px 360px;
-  margin-top: -20px;
-}
-
-.promotions-cards {
+.category-cards {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -205,7 +190,7 @@ export default {
   justify-content: center;
 }
 
-.promotions-card {
+.category-card {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -213,13 +198,13 @@ export default {
   position: relative;
 }
 
-.promotions-card-top{
+.category-card-top{
   height: 350px;
   margin-bottom: 18px;
   position: relative;
 }
 
-.promotions-card-image {
+.category-card-image {
   width: 100%;
   height: 286px;
   width: 270px;
@@ -227,7 +212,7 @@ export default {
   object-fit: cover;
 }
 
-.promotions-card-bot{
+.category-card-bot{
   display: flex;
   width: 100%;
   height: 44px;
@@ -236,7 +221,7 @@ export default {
   gap: 0;
 }
 
-.promotions-price-section {
+.category-price-section {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -245,7 +230,7 @@ export default {
   flex-shrink: 0;
 }
 
-.promotions-card-price {
+.category-card-price {
   color: #000000;
   font-size: 24px;
   height: 20px;
@@ -256,7 +241,7 @@ export default {
   line-height: 1;
 }
 
-.promotions-old-price {
+.category-old-price {
   text-decoration: line-through;
   color: #999;
   font-size: 14px;
@@ -265,7 +250,7 @@ export default {
   margin-top: 2px;
 }
 
-.promotions-card-name {
+.category-card-name {
   color: #000000;
   margin-bottom: 10px;
   font-family: "Mulish-Regular-400";
@@ -279,7 +264,7 @@ export default {
   align-items: flex-start;
 }
 
-.promotions-card-button {
+.category-card-button {
   width: 142px;
   height: 44px;
   background-color: transparent;
@@ -299,18 +284,17 @@ export default {
   justify-content: center;
 }
 
-.promotions-card-button:hover:not(:disabled) {
+.category-card-button:hover:not(:disabled) {
   background-color: #000000;
   color: #F4F6F5;
 }
 
-.promotions-card-link {
+.category-card-link {
   text-decoration: none;
   color: inherit;
   display: block;
 }
 
-/* Используем те же бейджи что и в CategoryPage */
 .category-badge {
   position: absolute;
   top: 10px;
@@ -337,20 +321,6 @@ export default {
   background: #000000;
 }
 
-/* Бейдж скидки в процентах */
-.discount-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #ff4444;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-family: "Mulish-Regular-400";
-  font-weight: 600;
-  font-size: 14px;
-}
-
 /* Если несколько бейджей, можно добавить отступы для следующих */
 .category-badge:nth-child(2) {
   top: 40px;
@@ -360,77 +330,42 @@ export default {
   top: 70px;
 }
 
-/* Состояния загрузки */
-.loading-state {
-  text-align: center;
-  padding: 60px 0;
-  color: #666;
-}
-
-.loading-spinner {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #000000;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 0;
-  color: #666;
-  font-family: "Mulish-Regular-400";
-  font-size: 18px;
-}
-
 /* Адаптивность */
 @media (max-width: 768px) {
-  .promotions-content h1 {
-    padding: 80px 20px 20px;
+  .category-content h1 {
+    padding: 80px 20px 40px;
     text-align: center;
     font-size: 36px;
   }
   
-  .promotions-subtitle {
-    padding: 0 20px 40px;
-    text-align: center;
-  }
-  
-  .promotions-cards {
+  .category-cards {
     gap: 20px;
     padding: 0 20px;
   }
   
-  .promotions-card {
+  .category-card {
     flex-basis: calc(50% - 20px);
   }
   
-  .promotions-card-bot {
+  .category-card-bot {
     flex-direction: column;
     height: auto;
     gap: 10px;
     align-items: stretch;
   }
   
-  .promotions-card-button {
+  .category-card-button {
     width: 100%;
   }
   
-  .promotions-price-section {
+  .category-price-section {
     align-items: center;
     text-align: center;
   }
 }
 
 @media (max-width: 480px) {
-  .promotions-card {
+  .category-card {
     flex-basis: 100%;
   }
 }
