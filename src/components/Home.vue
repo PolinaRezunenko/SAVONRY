@@ -285,14 +285,14 @@ font-size: 24px;
 }
 
 .newproducts_card_top{
-  height: 350px;
+  height: auto;
   margin-bottom: 18px;
   position: relative;
 }
 
 .newproducts_card_image {
   width: 100%;
-  height: 286px;
+  height: 270px;
   width: 270px;
   margin-bottom: 16px;
   object-fit: cover;
@@ -441,34 +441,46 @@ font-size: 24px;
   padding: 120px 360px;
 }
 
-.about_content{
-  display: flex;
-  align-items: center;
-  gap: 122px;
-  margin-bottom: 120px;
-}
-
-.about_title{
+.about_title {
   font-family: "Raleway-SemiBold";
   font-weight: 600;
   font-size: 48px;
   color: #000;
   text-align: center;
-  padding: 0 0 51px ;
+  margin-bottom: 51px;
 }
 
-.about_text {
-  width: 488px;
-  height: 332px;
+.about_content {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Центрируем контент */
+  gap: 122px;
+  margin: 0 auto 120px;
+  max-width: 1200px; /* Ограничиваем максимальную ширину */
+  padding: 0 20px; /* Добавляем отступы */
+  flex-wrap: nowrap; /* Запрещаем перенос */
 }
 
- .about_img {
-  padding-left: 328px;
+.about_img {
+  flex: 0 0 auto; /* Запрещаем сжатие и растяжение */
   width: 622px;
   height: 526px;
 }
 
-.about_text h5{
+.about_img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Сохраняем пропорции изображения */
+  border-radius: 10px; /* Добавляем скругление если нужно */
+}
+
+.about_text {
+  flex: 0 0 auto; /* Запрещаем сжатие и растяжение */
+  width: 488px;
+  height: auto; /* Меняем фиксированную высоту на auto */
+}
+
+.about_text h5 {
   font-size: 24px;
   font-weight: 400;
   line-height: 100%;
@@ -477,17 +489,17 @@ font-size: 24px;
   font-family: "Mulish-Regular-400";
 }
 
-.about_text p{
+.about_text p {
   font-size: 16px;
   font-weight: 500;
   line-height: 150%;
   color: #000000;
   margin-bottom: 32px;
-  font-family:"Mulish-Light-300";
+  font-family: "Mulish-Light-300";
   font-weight: 300;
 }
 
-.about_button{
+.about_button {
   background-color: #000000; 
   color: #ffffff;
   width: 196px;
@@ -503,12 +515,14 @@ font-size: 24px;
   text-align: center;
   line-height: 20px;
   box-sizing: border-box;
+  transition: background-color 0.3s ease;
 }
 
 .about_button:hover {
-  background-color:  #323232;
+  background-color: #323232;
   color: white;
 }
+
 
 /* Адаптивность для мобильных */
 @media (max-width: 768px) {

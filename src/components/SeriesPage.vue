@@ -110,6 +110,7 @@ export default {
 }
 </script>
 
+<!-- SeriesPage.vue - исправленные стили для 3 карточек в ряд -->
 <style scoped>
 .series-content {
   max-width: 1200px;
@@ -136,20 +137,16 @@ export default {
 }
 
 .series-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 карточки в ряд */
+  gap: 40px;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .series-card {
   background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  flex-basis: 350px;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -211,23 +208,32 @@ export default {
   color: #999;
 }
 
-@media (max-width: 768px) {
+/* Адаптивность для SeriesPage */
+@media (max-width: 1024px) {
   .series-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr); /* 2 карточки в ряд на планшетах */
+    gap: 30px;
   }
-  
+}
+
+@media (max-width: 768px) {
   .series-content h1 {
     font-size: 36px;
   }
   
-  .series-card {
-    flex-basis: calc(50% - 20px);
+  .series-grid {
+    grid-template-columns: 1fr; /* 1 карточка в ряд на мобильных */
+    gap: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .series-card {
-    flex-basis: 100%;
+  .series-content {
+    padding: 20px 10px;
+  }
+  
+  .series-content h1 {
+    font-size: 28px;
   }
 }
 </style>

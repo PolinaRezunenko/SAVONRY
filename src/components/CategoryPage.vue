@@ -199,14 +199,14 @@ export default {
 }
 
 .category-card-top{
-  height: 350px;
+  height: auto;
   margin-bottom: 18px;
   position: relative;
 }
 
 .category-card-image {
   width: 100%;
-  height: 286px;
+  height: 270px;
   width: 270px;
   margin-bottom: 16px;
   object-fit: cover;

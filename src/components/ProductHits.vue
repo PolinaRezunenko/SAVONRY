@@ -164,12 +164,15 @@ export default {
 .hits-section {
   padding: 120px 0;
   background-color: #ffffff;
+  width: 100%; /* Добавляем полную ширину */
 }
 
 .hits-content {
-  max-width: 1200px;
+  max-width: 1200px; /* Такая же ширина как у новинок */
+  width: 100%;
   margin: 0 auto;
   text-align: center;
+
 }
 
 .hits-title {
@@ -189,36 +192,32 @@ export default {
 }
 
 .hits-cards {
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 40px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 60px;
+  width: 100%; /* Полная ширина внутри контейнера */
+  margin: 0 auto 60px;
 }
 
 .hits-card {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  flex-basis: 270px;
+  width: 100%;
   position: relative;
 }
 
 .hits-card-top {
-  height: 350px;
+  height: auto;
   margin-bottom: 18px;
   position: relative;
 }
 
 .hits-card-image {
   width: 100%;
-  height: 286px;
-  width: 270px;
-  margin-bottom: 16px;
+  height: 270px;
   object-fit: cover;
+  border-radius: 5px;
 }
 
 .hits-card-name {
@@ -350,10 +349,24 @@ export default {
   color: #F4F6F5;
 }
 
-/* Адаптивность */
+/* Адаптивность для Grid */
+@media (max-width: 1200px) {
+  .hits-cards {
+    gap: 30px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .hits-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+}
+
 @media (max-width: 768px) {
   .hits-section {
-    padding: 80px 20px;
+    padding: 80px 0;
   }
   
   .hits-title {
@@ -361,11 +374,8 @@ export default {
   }
   
   .hits-cards {
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
-  }
-  
-  .hits-card {
-    flex-basis: calc(50% - 20px);
   }
   
   .hits-card-bot {
@@ -386,8 +396,9 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .hits-card {
-    flex-basis: 100%;
+  .hits-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 }
 </style>

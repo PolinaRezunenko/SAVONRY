@@ -1,7 +1,7 @@
 <template>
   <section>
+  <Breadcrumbs />
     <div class="container">
-      <Breadcrumbs />
       <div class="product-detail" v-if="product">
         <div class="product-images">
           <img 

@@ -149,6 +149,7 @@ export default {
 }
 </script>
 
+<!-- SeriesDetail.vue - исправленные стили для 4 товаров в ряд -->
 <style scoped>
 .series-detail {
   max-width: 1200px;
@@ -200,21 +201,18 @@ export default {
 }
 
 .products-grid {
-  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 товара в ряд */
+  gap: 40px;
   width: 100%;
   margin: 0 auto;
-  display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 60px;
 }
 
 .product-card {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  flex-basis: 270px;
+  width: 100%;
   position: relative;
 }
 
@@ -226,7 +224,7 @@ export default {
 }
 
 .product-image {
-  height: 286px;
+  height: 270px;
   margin-bottom: 16px;
   position: relative;
   overflow: hidden;
@@ -347,6 +345,21 @@ export default {
   cursor: not-allowed;
 }
 
+/* Адаптивность для SeriesDetail */
+@media (max-width: 1200px) {
+  .products-grid {
+    gap: 30px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 товара в ряд на планшетах */
+    gap: 30px;
+  }
+}
+
 @media (max-width: 768px) {
   .series-header {
     margin-bottom: 60px;
@@ -361,11 +374,8 @@ export default {
   }
   
   .products-grid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
-  }
-  
-  .product-card {
-    flex-basis: calc(50% - 20px);
   }
   
   .product-bottom {
@@ -386,8 +396,8 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .product-card {
-    flex-basis: 100%;
+  .products-grid {
+    grid-template-columns: 1fr; /* 1 товар в ряд на мобильных */
   }
   
   .series-info h1 {

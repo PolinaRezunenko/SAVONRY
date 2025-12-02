@@ -12,7 +12,7 @@ import CategoryPage from '@/components/CategoryPage.vue'
 import ProductDetail from '@/components/ProductDetail.vue'
 import SeriesPage from '@/components/SeriesPage.vue'
 import SeriesDetail from '@/components/SeriesDetail.vue'
-import HitsPage from '@/components/HitsPage.vue' // ДОБАВЛЯЕМ ИМПОРТ
+import HitsPage from '@/components/HitsPage.vue' 
 
 const routes = [
   { path: '/', name: 'Home', component: Home },

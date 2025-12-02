@@ -182,8 +182,10 @@ export default {
 
 .newproducts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(4, 1fr); /* Четко 4 колонки */
   gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
   justify-items: center;
 }
 
@@ -191,7 +193,8 @@ export default {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  width: 270px;
+  width: 100%;
+  max-width: 270px;
   position: relative;
   transition: transform 0.3s ease;
 }
@@ -201,14 +204,14 @@ export default {
 }
 
 .newproducts-card-top {
-  height: 350px;
+  height: auto;
   margin-bottom: 18px;
   position: relative;
 }
 
 .newproducts-card-image {
   width: 100%;
-  height: 286px;
+  height: 270px;
   object-fit: cover;
   border-radius: 5px;
 }
@@ -321,15 +324,25 @@ export default {
   letter-spacing: 0.5px;
 }
 
-/* Адаптивность */
+/* Адаптивность для Grid */
+@media (max-width: 1200px) {
+  .newproducts-grid {
+    gap: 30px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .newproducts-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+}
+
 @media (max-width: 768px) {
   .newproducts-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
-  }
-  
-  .newproducts-card {
-    width: 100%;
   }
   
   .newproducts-card-bot {
