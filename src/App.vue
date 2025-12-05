@@ -20,10 +20,12 @@
         </RouterLink>       
         <RouterLink :to="{ name: 'Contacts'}" class="profile_icon">
           <img src="./assets/icons/phone.svg" alt="контакты">
-        </RouterLink> 
-        <RouterLink :to="{ name: 'Profile'}" class="profile_icon">
-          <img src="./assets/icons/lk.svg" alt="профиль">
         </RouterLink>
+
+        <button @click="openAuthModal" class="profile-icon-btn">
+          <img src="./assets/icons/lk.svg" alt="профиль">
+        </button>
+
         <RouterLink :to="{ name: 'Cart'}" class="profile_icon cart-icon">
           <img src="./assets/icons/cart.svg" alt="корзина">
           <span v-if="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
@@ -50,6 +52,9 @@
     
 <!-- активная страница -->
 <RouterView />  
+
+<!-- Баннер на всех страницах -->
+<Banner />
 
 <footer class="footer">
   <div class="brand-section">
@@ -111,79 +116,97 @@
       </div>
   </div>
 </footer>
+
+<AuthModal 
+    :isVisible="showAuthModal" 
+    @close="closeAuthModal" 
+  />
 </template>
 
 <script>
 import { useCart } from '@/composables/useCart'
-import { supabase } from '@/lib/supabase'
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import AuthModal from '@/components/AuthModal.vue'
+import Banner from '@/components/Banner.vue' // ПРЯМОЙ импорт
 
 export default {
   name: 'App',
+  components: {
+    AuthModal,
+    Banner // Регистрируем компонент напрямую
+  },
   setup() {
     const categories = ref([])
     const { cartCount, loadCartCount } = useCart()
     const router = useRouter()
     const route = useRoute()
+    
+    // Состояние для отображения модального окна
+    const showAuthModal = ref(false)
+    
+    // Текущий пользователь
+    const currentUser = ref(null)
 
-    const scrollToNewProducts = () => {
-      // Если мы уже на главной странице
-      if (route.path === '/') {
-        const element = document.getElementById('new-products')
-        if (element) {
-          element.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-          })
-        }
-      } else {
-        // Если не на главной, переходим на главную с хэшем
-        router.push('/#new-products')
-        
-        // После перехода скроллим к секции
-        setTimeout(() => {
-          const element = document.getElementById('new-products')
-          if (element) {
-            element.scrollIntoView({ 
-              behavior: 'smooth',
-              block: 'start'
-            })
-          }
-        }, 100)
+    // Проверка авторизации при загрузке
+    const checkAuth = () => {
+      try {
+        const userJson = localStorage.getItem('savonry_current_user')
+        currentUser.value = userJson ? JSON.parse(userJson) : null
+      } catch (error) {
+        currentUser.value = null
       }
     }
 
-    const loadCategories = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('categories')
-          .select('*')
-          .order('sort_order', { ascending: true })
-        
-        if (error) throw error
-        categories.value = data || []
-        console.log('Загружено категорий:', categories.value.length)
-      } catch (error) {
-        console.error('Ошибка загрузки категорий:', error)
-      }
+    // Открытие модального окна
+    const openAuthModal = () => {
+      showAuthModal.value = true
+    }
+
+    // Закрытие модального окна
+    const closeAuthModal = () => {
+      showAuthModal.value = false
     }
 
     onMounted(() => {
-      loadCategories()
       loadCartCount()
     })
 
     return {
       categories,
       cartCount,
-      scrollToNewProducts
+      showAuthModal,
+      openAuthModal,
+      closeAuthModal
     }
   }
 }
 </script>
 
 <style scoped>
+/* Стили без изменений */
+</style>
+
+<style scoped>
+/* Добавляем стили для кнопки профиля */
+.profile-icon-btn {
+    background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  position: relative;
+  top: -2px; /* Приподнимаем немного вверх */
+}
+
+.profile-icon-btn:hover {
+  opacity: 0.8;
+}
+
 /* Базовые стили для примера */
 .top-header {
   background-color: #f8f8f8;

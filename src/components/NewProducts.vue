@@ -1,7 +1,7 @@
 <template>
-  <section>
+  <section> <Breadcrumbs />
     <div class="container">
-      <Breadcrumbs />
+     
       <div class="newproducts-page">
         <h1>Новинки</h1>
         
