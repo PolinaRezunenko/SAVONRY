@@ -1,7 +1,7 @@
 <template>
-  <section>
+  <section>      
+    <Breadcrumbs />
     <div class="container">
-      <Breadcrumbs />
       <div class="cart-content">
         <h1>Корзина</h1>
         
@@ -50,27 +50,33 @@
             <div class="total">
               Итого: {{ totalPrice }} ₽
             </div>
-            <button class="checkout-btn">Оформить заказ</button>
+            <button 
+              @click="handleCheckout" 
+              class="checkout-btn"
+              :disabled="isCheckingOut"
+            >
+              {{ isCheckingOut ? 'Оформление...' : 'Оформить заказ' }}
+            </button>
           </div>
         </div>
       </div>
     </div>
   </section>
- <!-- Добавляем секцию хитов -->
+  <!-- Добавляем секцию хитов -->
   <ProductHits />
 </template>
 
 <script>
 import { useCart } from '@/composables/useCart'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import Breadcrumbs from './Breadcrumbs.vue'
-import ProductHits from '@/components/ProductHits.vue' // Добавляем импорт
+import ProductHits from '@/components/ProductHits.vue'
 
 export default {
   name: 'Cart',
   components: {
     Breadcrumbs,
-    ProductHits // Регистрируем компонент
+    ProductHits
   },
   setup() {
     const { 
@@ -80,12 +86,13 @@ export default {
       handleRemoveFromCart,
       loadCartItems 
     } = useCart()
+    
+    const isCheckingOut = ref(false)
 
     const handleImageError = (event) => {
       event.target.src = '@/assets/images/placeholder.jpg'
     }
 
-    // Правильное вычисление суммы для каждого товара
     const calculateItemTotal = (item) => {
       const price = item.products?.price || 0
       const quantity = item.quantity || 1
@@ -100,15 +107,103 @@ export default {
       await handleRemoveFromCart(itemId)
     }
 
+    // Симуляция отправки письма о заказе
+    const sendOrderEmail = (orderDetails) => {
+      const orderNumber = Math.floor(100000 + Math.random() * 900000);
+      const orderDate = new Date().toLocaleString('ru-RU');
+      
+      let itemsList = '';
+      orderDetails.items.forEach(item => {
+        itemsList += `• ${item.name} - ${item.quantity} шт. × ${item.price} ₽ = ${item.total} ₽\n`;
+      });
+      
+      const emailContent = `
+        Уважаемый покупатель!
+        
+        Ваш заказ №${orderNumber} успешно оформлен.
+        
+        Дата заказа: ${orderDate}
+        
+        Состав заказа:
+        ${itemsList}
+        
+        Итого к оплате: ${orderDetails.total} ₽
+        
+        Статус заказа: Обрабатывается
+        
+        Спасибо за ваш заказ!
+        Мы свяжемся с вами в ближайшее время для уточнения деталей.
+        
+        С уважением,
+        Команда магазина
+      `;
+      
+      console.log('=== ПИСЬМО О ЗАКАЗЕ ===');
+      console.log('Заказ отправлен на email клиента');
+      console.log('Номер заказа:', orderNumber);
+      console.log('Содержимое письма:', emailContent);
+      
+      return orderNumber;
+    }
+
+    // Обработка оформления заказа
+    const handleCheckout = async () => {
+      if (cartItems.value.length === 0) {
+        alert('Корзина пуста');
+        return;
+      }
+      
+      isCheckingOut.value = true;
+      
+      try {
+        // Создаем детали заказа
+        const orderDetails = {
+          items: cartItems.value.map(item => ({
+            name: item.products?.name || 'Товар',
+            quantity: item.quantity,
+            price: item.products?.price || 0,
+            total: calculateItemTotal(item)
+          })),
+          total: totalPrice.value,
+          date: new Date().toISOString()
+        };
+        
+        // Симуляция обработки заказа
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Имитация задержки
+        
+        // Отправляем "письмо" о заказе
+        const orderNumber = sendOrderEmail(orderDetails);
+        
+        // Показываем сообщение пользователю
+        alert(`Заказ №${orderNumber} успешно оформлен!\n\nДетали заказа отправлены на ваш email.\n\nСпасибо за покупку!`);
+        
+        // Очищаем корзину после оформления
+        cartItems.value.forEach(async item => {
+          await handleRemoveFromCart(item.id);
+        });
+        
+        // Перезагружаем корзину
+        await loadCartItems();
+        
+      } catch (error) {
+        console.error('Ошибка при оформлении заказа:', error);
+        alert('Произошла ошибка при оформлении заказа. Попробуйте еще раз.');
+      } finally {
+        isCheckingOut.value = false;
+      }
+    }
+
     onMounted(() => {
-      loadCartItems()
+      loadCartItems();
     })
 
     return {
       cartItems,
       totalPrice,
+      isCheckingOut,
       updateQuantity,
       removeFromCart,
+      handleCheckout,
       handleImageError,
       calculateItemTotal
     }
@@ -284,10 +379,15 @@ export default {
   border-radius: 5px;
   font-size: 18px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-.checkout-btn:hover {
+.checkout-btn:hover:not(:disabled) {
   background-color: #333;
+}
+
+.checkout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>

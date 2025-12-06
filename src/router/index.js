@@ -36,14 +36,14 @@ const routes = [
   { path: '/series/:id', name: 'SeriesDetail', component: SeriesDetail },
   
   // РЕДИРЕКТЫ СО СТАРЫХ URL НА НОВЫЕ
-  { path: '/catalog1', redirect: '/category/bath' },
-  { path: '/face', redirect: '/category/face' },
-  { path: '/body', redirect: '/category/body' },
-  { path: '/hair', redirect: '/category/hair' },
-  { path: '/men', redirect: '/category/men' },
-  { path: '/gifts', redirect: '/category/gifts' },
-  { path: '/series-old', redirect: '/series' },
-  { path: '/accessories', redirect: '/category/accessories' }
+  { path:  '/category/bath' },
+  { path:  '/category/face' },
+  { path:  '/category/body' },
+  { path:  '/category/hair' },
+  { path:  '/category/men' },
+  { path:  '/category/gifts' },
+  { path:  '/series' },
+  { path:  '/category/accessories' }
 ]
 
 export const router = createRouter({

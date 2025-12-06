@@ -1,38 +1,127 @@
 <template>
   <section class="subscription-section">
     <div class="container">
-        <div class="subscription-content">
-            <!-- Левая часть - форма -->
-            <div class="form-container">
-                <h1 class="main-title">Узнавайте первыми о наших акциях, розыгрышах и новостях</h1>
-                
-                <form class="subscription-form">
-                    <div class="input-group">
-                        <input type="email" class="email-input" placeholder="E-mail" required>
-                        <button type="submit" class="subscribe-btn">Подписаться</button>
-                    </div>
-                </form>
-                
-                <p class="privacy-text">
-                    Нажимая подписаться, вы соглашаетесь на обработку персональных данных
-                </p>
-              
+      <div class="subscription-content">
+        <!-- Левая часть - форма -->
+        <div class="form-container">
+          <h1 class="main-title">Узнавайте первыми о наших акциях, розыгрышах и новостях</h1>
+          
+          <form class="subscription-form" @submit.prevent="handleSubscription">
+            <div class="input-group">
+              <input 
+                v-model="email" 
+                type="email" 
+                class="email-input" 
+                placeholder="E-mail" 
+                required
+              >
+              <button 
+                type="submit" 
+                class="subscribe-btn"
+                :disabled="isSubmitting"
+              >
+                {{ isSubmitting ? 'Отправка...' : 'Подписаться' }}
+              </button>
             </div>
-            
-            <!-- Правая часть - фотография -->
-            <div class="image-container">
-                <div class="image-wrapper">
-                    <img src="@/assets/images/home/scrab.png" alt="скраб" class="product-image">
-                </div>
-            </div>
+          </form>
+          
+          <p class="privacy-text">
+            Нажимая подписаться, вы соглашаетесь на обработку персональных данных
+          </p>
         </div>
+        
+        <!-- Правая часть - фотография -->
+        <div class="image-container">
+          <div class="image-wrapper">
+            <img src="@/assets/images/home/scrab.png" alt="скраб" class="product-image">
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  name: 'Banner'
+  name: 'Banner',
+  setup() {
+    const email = ref('')
+    const isSubmitting = ref(false)
+    
+    // Симуляция отправки письма при подписке
+    const sendSubscriptionEmail = (emailAddress) => {
+      const emailContent = `
+        Добро пожаловать в нашу рассылку!
+        
+        Спасибо, что подписались на новости нашего магазина.
+        
+        Теперь вы будете первыми узнавать о:
+        • Новых поступлениях
+        • Специальных акциях
+        • Распродажах
+        • Эксклюзивных предложениях
+        
+        Мы обещаем не спамить и отправлять только действительно важные и интересные новости.
+        
+        Если вы не подписывались на рассылку, пожалуйста, проигнорируйте это письмо.
+        
+        С уважением,
+        Команда магазина
+      `;
+      
+      console.log('=== ПОДПИСКА НА РАССЫЛКУ ===');
+      console.log('Email для рассылки:', emailAddress);
+      console.log('Содержимое письма:', emailContent);
+      
+      // В реальном приложении здесь был бы API вызов:
+      // await newsletterAPI.subscribe(emailAddress);
+    }
+    
+    // Обработка подписки
+    const handleSubscription = async () => {
+      if (!email.value.trim()) {
+        alert('Пожалуйста, введите email адрес');
+        return;
+      }
+      
+      // Простая валидация email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.value)) {
+        alert('Пожалуйста, введите корректный email адрес');
+        return;
+      }
+      
+      isSubmitting.value = true;
+      
+      try {
+        // Имитация задержки отправки
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Отправляем "письмо" о подписке
+        sendSubscriptionEmail(email.value);
+        
+        // Показываем сообщение пользователю
+        alert(`Спасибо за подписку!\n\nНа адрес ${email.value} отправлено письмо с подтверждением.`);
+        
+        // Очищаем поле ввода
+        email.value = '';
+        
+      } catch (error) {
+        console.error('Ошибка при подписке:', error);
+        alert('Произошла ошибка при подписке. Попробуйте еще раз.');
+      } finally {
+        isSubmitting.value = false;
+      }
+    }
+    
+    return {
+      email,
+      isSubmitting,
+      handleSubscription
+    }
+  }
 }
 </script>
 
@@ -126,6 +215,11 @@ export default {
 .subscribe-btn:hover {
   background-color:  #323232;
   color: white;
+}
+
+.subscribe-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .privacy-text {

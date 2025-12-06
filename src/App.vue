@@ -148,15 +148,15 @@ export default {
     // Текущий пользователь
     const currentUser = ref(null)
 
-    // Проверка авторизации при загрузке
-    const checkAuth = () => {
-      try {
-        const userJson = localStorage.getItem('savonry_current_user')
-        currentUser.value = userJson ? JSON.parse(userJson) : null
-      } catch (error) {
-        currentUser.value = null
-      }
-    }
+    // // Проверка авторизации при загрузке
+    // const checkAuth = () => {
+    //   try {
+    //     const userJson = localStorage.getItem('savonry_current_user')
+    //     currentUser.value = userJson ? JSON.parse(userJson) : null
+    //   } catch (error) {
+    //     currentUser.value = null
+    //   }
+    // }
 
     // Открытие модального окна
     const openAuthModal = () => {
