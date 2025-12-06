@@ -1,9 +1,7 @@
 <template>
   <div class="main_photo">
-    <h1>главная</h1>
-    <h2>текст</h2>
+    <h1>На дипломе будет действующая поисковая строка</h1>
+    
   </div>
-  <!-- <div class="menu">
 
-  </div> -->
 </template>

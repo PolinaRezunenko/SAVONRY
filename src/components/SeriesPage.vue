@@ -1,7 +1,8 @@
 <template>
   <section>
+    <Breadcrumbs />
     <div class="container">
-      <Breadcrumbs />
+      
       <div class="series-content">
         <h1>Серии продукции</h1>
         <p class="series-subtitle">Откройте для себя уникальные ароматические коллекции</p>

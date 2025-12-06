@@ -1,7 +1,7 @@
 <template>
-  <section>
+  <section>      
+    <Breadcrumbs />
     <div class="container">
-      <Breadcrumbs />
       <div class="series-detail" v-if="series">
         <div class="series-header">
           <div class="series-info">

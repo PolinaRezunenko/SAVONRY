@@ -18,9 +18,9 @@
         <RouterLink :to="{ name: 'Search'}" class="search_icon">
           <img src="./assets/icons/search.svg" alt="поиск">
         </RouterLink>       
-        <RouterLink :to="{ name: 'Contacts'}" class="profile_icon">
+        <!-- <RouterLink :to="{ name: 'Contacts'}" class="profile_icon">
           <img src="./assets/icons/phone.svg" alt="контакты">
-        </RouterLink>
+        </RouterLink> -->
 
         <button @click="openAuthModal" class="profile-icon-btn">
           <img src="./assets/icons/lk.svg" alt="профиль">
