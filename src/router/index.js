@@ -6,7 +6,7 @@ import Profile from '@/components/Profile.vue'
 import NewProducts from '@/components/NewProducts.vue'
 import About from '@/components/About.vue'
 import Search from '@/components/Search.vue'
-import Contacts from '@/components/Contacts.vue'
+// import Contacts from '@/components/Contacts.vue'
 import Cart from '@/components/Cart.vue'
 import CategoryPage from '@/components/CategoryPage.vue'
 import ProductDetail from '@/components/ProductDetail.vue'
@@ -21,7 +21,7 @@ const routes = [
   { path: '/newproducts', name: 'NewProducts', component: NewProducts },
   { path: '/about', name: 'About', component: About },
   { path: '/search', name: 'Search', component: Search },
-  { path: '/contacts', name: 'Contacts', component: Contacts },
+  // { path: '/contacts', name: 'Contacts', component: Contacts },
   { path: '/cart', name: 'Cart', component: Cart },
   { path: '/product/:id', name: 'ProductDetail', component: ProductDetail },
   

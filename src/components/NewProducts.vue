@@ -1,5 +1,6 @@
 <template>
-  <section> <Breadcrumbs />
+  <section> 
+    <Breadcrumbs />
     <div class="container">
      
       <div class="newproducts-page">

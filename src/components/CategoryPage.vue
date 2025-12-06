@@ -1,7 +1,7 @@
 <template>
   <section>
+    <Breadcrumbs />
     <div class="container">
-      <Breadcrumbs />
       <div class="category-content">
         <h1>{{ categoryTitle }}</h1>
         <div class="category-cards">

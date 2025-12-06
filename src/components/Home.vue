@@ -139,33 +139,6 @@ export default {
         newProducts.value = data || []
       } catch (error) {
         console.error('Ошибка загрузки товаров:', error)
-        // Если нет товаров в БД, используем заглушки
-        newProducts.value = [
-          {
-            id: '1',
-            name: 'Набор Ванильный эспрессо (уход за телом)',
-            price: 740,
-            image_url: '@/assets/images/newprod1.png'
-          },
-          {
-            id: '2', 
-            name: 'Гель для душа Цитрусовый микс',
-            price: 450,
-            image_url: '@/assets/images/newprod2.png'
-          },
-          {
-            id: '3',
-            name: 'Пена для ванны Цветочная нежность', 
-            price: 520,
-            image_url: '@/assets/images/newprod3.png'
-          },
-          {
-            id: '4',
-            name: 'Скраб для тела Лесные ягоды',
-            price: 680,
-            image_url: '@/assets/images/newprod4.png'
-          }
-        ]
       }
     }
 
