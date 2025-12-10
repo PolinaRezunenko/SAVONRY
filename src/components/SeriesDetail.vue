@@ -214,6 +214,10 @@ export default {
   flex-direction: column;
   width: 100%;
   position: relative;
+  transition: transform 0.3s ease;
+}
+.product-card:hover {
+  transform: translateY(-5px);
 }
 
 .product-link {

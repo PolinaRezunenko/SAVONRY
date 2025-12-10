@@ -196,6 +196,10 @@ export default {
   flex-direction: column;
   flex-basis: 270px;
   position: relative;
+  transition: transform 0.3s ease;
+}
+.category-card:hover {
+  transform: translateY(-5px);
 }
 
 .category-card-top{

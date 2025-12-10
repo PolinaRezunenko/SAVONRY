@@ -211,6 +211,10 @@ export default {
   flex-direction: column;
   flex-basis: 270px;
   position: relative;
+  transition: transform 0.3s ease;
+}
+.promotions-card:hover {
+  transform: translateY(-5px);
 }
 
 .promotions-card-top{

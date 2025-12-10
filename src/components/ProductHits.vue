@@ -205,6 +205,10 @@ export default {
   flex-direction: column;
   width: 100%;
   position: relative;
+  transition: transform 0.3s ease;
+}
+.hits-card:hover {
+  transform: translateY(-5px);
 }
 
 .hits-card-top {

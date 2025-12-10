@@ -254,7 +254,10 @@ font-size: 24px;
   display: flex;
   flex-direction: column;
   flex-basis: 270px;
-  position: relative;
+  transition: transform 0.3s ease;
+}
+.newproducts_card:hover {
+  transform: translateY(-5px);
 }
 
 .newproducts_card_top{
