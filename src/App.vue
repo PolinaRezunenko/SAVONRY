@@ -63,13 +63,13 @@
           </div>
       <p >SAVONRY - бренд высококачественной и эффективной натуральной косметики с чистым растительным составом</p>
       <div class="social-links">
-          <a href="https://web.whatsapp.com/" class="social-link vk" target="_blank"  rel="noopener noreferrer">
+          <!-- <a href="https://web.whatsapp.com/" class="social-link whatsapp" target="_blank"  rel="noopener noreferrer">
               <img src="./assets/icons/wapp.svg" alt="whatsapp" >
-          </a>
-          <a href="https://telegram.org" class="social-link telegram" target="_blank">
+          </a> -->
+          <a href="https://t.me/ecosavonry" class="social-link telegram" target="_blank">
               <img src="./assets/icons/tg.svg" alt="tg" >
           </a>
-          <a href="https://vk.com/" class="social-link instagram" target="_blank">
+          <a href="https://vk.com/savonry_beauty" class="social-link vk" target="_blank">
               <img src="./assets/icons/vk.svg" alt="vk">
           </a>
       </div>
