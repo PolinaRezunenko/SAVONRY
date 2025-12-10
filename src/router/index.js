@@ -1,49 +1,105 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Home from '@/components/Home.vue'
-import Promotions from '@/components/Promotions.vue'
-import Profile from '@/components/Profile.vue'
-import NewProducts from '@/components/NewProducts.vue'
-import About from '@/components/About.vue'
-import Search from '@/components/Search.vue'
-// import Contacts from '@/components/Contacts.vue'
-import Cart from '@/components/Cart.vue'
-import CategoryPage from '@/components/CategoryPage.vue'
-import ProductDetail from '@/components/ProductDetail.vue'
-import SeriesPage from '@/components/SeriesPage.vue'
-import SeriesDetail from '@/components/SeriesDetail.vue'
-import HitsPage from '@/components/HitsPage.vue' 
+import Home from '@/components/Home.vue' // Главная страница - критически важна
+import Search from '@/components/Search.vue' // Поиск - используется часто
+import Cart from '@/components/Cart.vue' // Корзина - критична для конверсии
 
 const routes = [
-  { path: '/', name: 'Home', component: Home },
-  { path: '/promotions', name: 'Promotions', component: Promotions },  
-  { path: '/profile', name: 'Profile', component: Profile },
-  { path: '/newproducts', name: 'NewProducts', component: NewProducts },
-  { path: '/about', name: 'About', component: About },
-  { path: '/search', name: 'Search', component: Search },
-  // { path: '/contacts', name: 'Contacts', component: Contacts },
-  { path: '/cart', name: 'Cart', component: Cart },
-  { path: '/product/:id', name: 'ProductDetail', component: ProductDetail },
+  { 
+    path: '/', 
+    name: 'Home', 
+    component: Home 
+  },
+  { 
+    path: '/promotions', 
+    name: 'Promotions', 
+    component: () => import('@/components/Promotions.vue')
+  },  
+  { 
+    path: '/profile', 
+    name: 'Profile', 
+    component: () => import('@/components/Profile.vue')
+  },
+  { 
+    path: '/newproducts', 
+    name: 'NewProducts', 
+    component: () => import('@/components/NewProducts.vue')
+  },
+  { 
+    path: '/about', 
+    name: 'About', 
+    component: () => import('@/components/About.vue')
+  },
+  { 
+    path: '/search', 
+    name: 'Search', 
+    component: Search 
+  },
   
-  // ДОБАВЛЯЕМ МАРШРУТ ДЛЯ ХИТОВ
-  { path: '/hits', name: 'HitsPage', component: HitsPage },
-  
-  // УНИВЕРСАЛЬНЫЙ МАРШРУТ ДЛЯ ВСЕХ КАТЕГОРИЙ
-  { path: '/category/:category', name: 'CategoryPage', component: CategoryPage },
-  
-  // МАРШРУТЫ ДЛЯ СЕРИЙ
-  { path: '/series', name: 'SeriesPage', component: SeriesPage },
-  { path: '/series/:id', name: 'SeriesDetail', component: SeriesDetail },
+  { 
+    path: '/cart', 
+    name: 'Cart', 
+    component: Cart 
+  },
+  { 
+    path: '/product/:id', 
+    name: 'ProductDetail', 
+    component: () => import('@/components/ProductDetail.vue')
+  },
+  { 
+    path: '/hits', 
+    name: 'HitsPage', 
+    component: () => import('@/components/HitsPage.vue')
+  },
+  { 
+    path: '/category/:category', 
+    name: 'CategoryPage', 
+    component: () => import('@/components/CategoryPage.vue')
+  },
+  { 
+    path: '/series', 
+    name: 'SeriesPage', 
+    component: () => import('@/components/SeriesPage.vue')
+  },
+  { 
+    path: '/series/:id', 
+    name: 'SeriesDetail', 
+    component: () => import('@/components/SeriesDetail.vue')
+  },
   
   // РЕДИРЕКТЫ СО СТАРЫХ URL НА НОВЫЕ
-  { path:  '/category/bath' },
-  { path:  '/category/face' },
-  { path:  '/category/body' },
-  { path:  '/category/hair' },
-  { path:  '/category/men' },
-  { path:  '/category/gifts' },
-  { path:  '/series' },
-  { path:  '/category/accessories' }
+  { 
+    path: '/category/bath',
+    redirect: '/category/bath'
+  },
+  { 
+    path: '/category/face',
+    redirect: '/category/face'
+  },
+  { 
+    path: '/category/body',
+    redirect: '/category/body'
+  },
+  { 
+    path: '/category/hair',
+    redirect: '/category/hair'
+  },
+  { 
+    path: '/category/men',
+    redirect: '/category/men'
+  },
+  { 
+    path: '/category/gifts',
+    redirect: '/category/gifts'
+  },
+  { 
+    path: '/series',
+    redirect: '/series'
+  },
+  { 
+    path: '/category/accessories',
+    redirect: '/category/accessories'
+  }
 ]
 
 export const router = createRouter({
