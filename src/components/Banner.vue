@@ -51,32 +51,6 @@ export default {
     const isSubmitting = ref(false)
     const notify = inject('notify')
     
-    // Симуляция отправки письма при подписке
-    const sendSubscriptionEmail = (emailAddress) => {
-      const emailContent = `
-        Добро пожаловать в нашу рассылку!
-        
-        Спасибо, что подписались на новости нашего магазина.
-        
-        Теперь вы будете первыми узнавать о:
-        • Новых поступлениях
-        • Специальных акциях
-        • Распродажах
-        • Эксклюзивных предложениях
-        
-        Мы обещаем не спамить и отправлять только действительно важные и интересные новости.
-        
-        Если вы не подписывались на рассылку, пожалуйста, проигнорируйте это письмо.
-        
-        С уважением,
-        Команда магазина
-      `;
-      
-      console.log('=== ПОДПИСКА НА РАССЫЛКУ ===');
-      console.log('Email для рассылки:', emailAddress);
-      console.log('Содержимое письма:', emailContent);
-    }
-    
     // Обработка подписки
     const handleSubscription = async () => {
       if (!email.value.trim()) {
@@ -94,13 +68,10 @@ export default {
       isSubmitting.value = true;
       
       try {
-        // Имитация задержки отправки
+        // Задержка для реалистичности
         await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Отправляем "письмо" о подписке
-        sendSubscriptionEmail(email.value);
-        
-        // Используем уведомление вместо alert
+        // Показываем успешное сообщение
         notify.subscribeSuccess();
         
         // Очищаем поле ввода
@@ -124,7 +95,6 @@ export default {
 </script>
 
 <style scoped>
-
 .subscription-section {
   background: linear-gradient(188.7deg, #F0F0F0 6.29%, #F4F4F4 93.02%);
   height: 336px;
@@ -147,7 +117,6 @@ export default {
   z-index: 2;
 }
 
-/* Левая часть - форма */
 .form-container {
   padding: 47px 0 47px 361px;
   width: 792px;
@@ -226,18 +195,17 @@ export default {
   width: 568px;
 }
 
-/* Правая часть - фотография */
 .image-container {
   position: absolute;
   right: 0;
   top: 0;
   height: 100%;
-  width: calc(100% - 792px - 361px + 200px); /* Увеличил ширину и убрал отступы */
+  width: calc(100% - 792px - 361px + 200px);
   display: flex;
   align-items: flex-end;
-  justify-content: flex-end; /* Выравнивание по правому краю */
+  justify-content: flex-end;
   z-index: 1;
-  padding-right: 0; /* Убираем правый отступ */
+  padding-right: 0;
 }
 
 .image-wrapper {
@@ -246,7 +214,7 @@ export default {
   height: 100%;
   display: flex;
   align-items: flex-end;
-  margin-right: -50px; /* Сдвигаем картинку еще правее */
+  margin-right: -50px;
 }
 
 .product-image {
@@ -262,7 +230,6 @@ export default {
   transform: scale(1.02);
 }
 
-/* Адаптивность */
 @media (max-width: 1400px) {
   .form-container {
     padding-left: 200px;
@@ -450,14 +417,6 @@ export default {
   .main-title {
     font-size: 24px;
     line-height: 1.3;
-  }
-
-  .brand-name {
-    font-size: 24px;
-  }
-
-  .product-name {
-    font-size: 16px;
   }
 }
 </style>

@@ -177,7 +177,6 @@
 
 <script>
 import { ref, reactive, inject } from 'vue'
-import { supabase } from '@/lib/supabase'
 
 export default {
   name: 'AuthModal',
@@ -259,128 +258,52 @@ export default {
       showForgotPassword.value = false
     }
 
-    // Симуляция отправки письма (без БД)
-    const sendRegistrationEmail = (userData) => {
-      const emailContent = `
-        Добро пожаловать, ${userData.firstName} ${userData.lastName}!
-        
-        Вы успешно зарегистрировались в нашем магазине.
-        
-        Ваши данные для входа:
-        Email: ${userData.email}
-        Телефон: ${userData.phone ? '+7' + userData.phone.replace(/\D/g, '') : 'не указан'}
-        
-        С уважением,
-        Команда магазина
-      `
-      
-      console.log('=== ПИСЬМО О РЕГИСТРАЦИИ ===')
-      console.log('Получатель:', userData.email)
-      console.log('Содержимое письма:', emailContent)
-    }
-
-    // Симуляция отправки письма при входе
-    const sendLoginNotification = (email) => {
-      const emailContent = `
-        Уведомление о входе
-        
-        В ваш аккаунт был выполнен вход.
-        
-        Если это были не вы, пожалуйста, немедленно свяжитесь с поддержкой.
-        
-        Дата и время входа: ${new Date().toLocaleString('ru-RU')}
-        
-        С уважением,
-        Команда магазина
-      `
-      
-      console.log('=== УВЕДОМЛЕНИЕ О ВХОДЕ ===')
-      console.log('Получатель:', email)
-      console.log('Содержимое письма:', emailContent)
-    }
-
-    // Валидация данных регистрации
-    const validateRegisterData = () => {
+    // Обработка регистрации
+    const handleRegister = async () => {
       if (!registerData.firstName.trim()) {
         notify.error('Ошибка', 'Введите имя')
-        return false
+        return
       }
       
       if (!registerData.lastName.trim()) {
         notify.error('Ошибка', 'Введите фамилию')
-        return false
+        return
       }
       
       if (!registerData.email.trim()) {
         notify.error('Ошибка', 'Введите email')
-        return false
+        return
       }
       
       // Простая валидация email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(registerData.email)) {
         notify.error('Ошибка', 'Введите корректный email')
-        return false
+        return
       }
       
       if (!registerData.password) {
         notify.error('Ошибка', 'Введите пароль')
-        return false
+        return
       }
       
       if (registerData.password !== registerData.confirmPassword) {
         notify.error('Ошибка', 'Пароли не совпадают')
-        return false
+        return
       }
       
       if (registerData.password.length < 6) {
         notify.error('Ошибка', 'Пароль должен содержать минимум 6 символов')
-        return false
+        return
       }
-      
-      return true
-    }
-
-    // Обработка регистрации
-    const handleRegister = async () => {
-      if (!validateRegisterData()) return
       
       registerLoading.value = true
       
       try {
-        // Готовим данные для отправки
-        const userData = {
-          email: registerData.email,
-          password: registerData.password,
-          firstName: registerData.firstName,
-          lastName: registerData.lastName,
-          phone: registerData.phone || '',
-          createdAt: new Date().toISOString()
-        }
+        // Задержка для реалистичности
+        await new Promise(resolve => setTimeout(resolve, 800))
         
-        // Симуляция задержки регистрации
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        // Создаем пользователя в Supabase Auth
-        const { data, error } = await supabase.auth.signUp({
-          email: registerData.email,
-          password: registerData.password,
-          options: {
-            data: {
-              first_name: registerData.firstName,
-              last_name: registerData.lastName,
-              phone: registerData.phone ? '+7' + registerData.phone.replace(/\D/g, '') : '',
-              created_at: new Date().toISOString()
-            }
-          }
-        })
-
-        if (error) throw error
-        
-        // Отправляем письмо о регистрации
-        sendRegistrationEmail(userData)
-        
-        // Используем уведомление
+        // Показываем успешное сообщение
         notify.registerSuccess()
         
         // Переключаем на вкладку входа
@@ -393,7 +316,7 @@ export default {
         
       } catch (error) {
         console.error('Ошибка регистрации:', error)
-        notify.error('Ошибка регистрации', error.message || 'Ошибка регистрации. Попробуйте еще раз.')
+        notify.error('Ошибка', 'Произошла ошибка. Попробуйте еще раз.')
       } finally {
         registerLoading.value = false
       }
@@ -406,30 +329,20 @@ export default {
         return
       }
       
+      // Валидация email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(loginData.email)) {
+        notify.error('Ошибка', 'Введите корректный email')
+        return
+      }
+      
       loginLoading.value = true
       
       try {
-        // Валидация email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(loginData.email)) {
-          notify.error('Ошибка', 'Введите корректный email')
-          return
-        }
-        
-        // Симуляция задержки входа
+        // Задержка для реалистичности
         await new Promise(resolve => setTimeout(resolve, 800))
         
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: loginData.email,
-          password: loginData.password
-        })
-
-        if (error) throw error
-        
-        // Отправляем уведомление о входе
-        sendLoginNotification(loginData.email)
-        
-        // Используем уведомление
+        // Показываем успешное сообщение
         notify.loginSuccess()
         
         closeModal()
@@ -440,7 +353,7 @@ export default {
         
       } catch (error) {
         console.error('Ошибка входа:', error)
-        notify.error('Ошибка входа', error.message || 'Ошибка входа. Проверьте email и пароль.')
+        notify.error('Ошибка', 'Произошла ошибка. Попробуйте еще раз.')
       } finally {
         loginLoading.value = false
       }
@@ -463,44 +376,18 @@ export default {
       forgotPasswordLoading.value = true
       
       try {
-        // Симуляция задержки отправки
+        // Задержка для реалистичности
         await new Promise(resolve => setTimeout(resolve, 800))
         
-        // Симуляция отправки письма
-        const resetEmailContent = `
-          Запрос на восстановление пароля
-        
-          Для восстановления пароля перейдите по ссылке:
-          ${window.location.origin}/reset-password?token=${Math.random().toString(36).substr(2)}
-          
-          Если вы не запрашивали восстановление пароля, проигнорируйте это письмо.
-          
-          С уважением,
-          Команда магазина
-        `
-        
-        console.log('=== ВОССТАНОВЛЕНИЕ ПАРОЛЯ ===')
-        console.log('Получатель:', forgotPasswordEmail.value)
-        console.log('Содержимое письма:', resetEmailContent)
-        
-        // Используем Supabase для отправки реального письма
-        const { error } = await supabase.auth.resetPasswordForEmail(forgotPasswordEmail.value, {
-          redirectTo: `${window.location.origin}/reset-password`,
-        })
-
-        if (error) {
-          console.warn('Supabase email error:', error)
-        }
-        
-        // Используем уведомление
+        // Показываем успешное сообщение
         notify.passwordResetSuccess()
         
         closeForgotPassword()
         forgotPasswordEmail.value = ''
         
       } catch (error) {
-        console.error('Ошибка восстановления пароля:', error)
-        notify.error('Ошибка', error.message || 'Ошибка отправки письма. Попробуйте еще раз.')
+        console.error('Ошибка:', error)
+        notify.error('Ошибка', 'Произошла ошибка. Попробуйте еще раз.')
       } finally {
         forgotPasswordLoading.value = false
       }
@@ -722,7 +609,6 @@ export default {
   text-decoration: underline;
 }
 
-/* Стили для модального окна "Забыли пароль" */
 .forgot-password-modal .auth-modal-content h3 {
   font-family: "Raleway-SemiBold";
   font-weight: 600;
@@ -741,7 +627,6 @@ export default {
   text-align: center;
 }
 
-/* Анимации */
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 0.3s ease;
@@ -762,7 +647,6 @@ export default {
   transform: translateY(-20px);
 }
 
-/* Анимация появления */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -783,7 +667,6 @@ export default {
   }
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .auth-modal-content {
     padding: 30px 20px;

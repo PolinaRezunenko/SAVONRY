@@ -114,7 +114,7 @@
   </div>
 </footer>
 
-<!-- Контейнер для уведомлений - ТЕПЕРЬ ПО ЦЕНТРУ -->
+<!-- Контейнер для уведомлений -->
 <div class="notification-container">
   <NotificationToast ref="notificationRef" />
 </div>
@@ -164,16 +164,6 @@ export default {
         }
       },
       
-      // УБИРАЕМ уведомление при добавлении в корзину
-      // cartSuccess: (productName) => {
-      //   if (notificationRef.value) {
-      //     notificationRef.value.success(
-      //       'Добавлено в корзину',
-      //       `${productName} успешно добавлен в корзину`
-      //     )
-      //   }
-      // },
-      
       // Для оформления заказа (Cart.vue)
       orderSuccess: (orderNumber) => {
         if (notificationRef.value) {
@@ -189,7 +179,7 @@ export default {
         if (notificationRef.value) {
           notificationRef.value.success(
             'Регистрация успешна!',
-            'Добро пожаловать! Проверьте вашу почту для подтверждения.'
+            'Добро пожаловать! Вы успешно зарегистрировались.'
           )
         }
       },
@@ -252,7 +242,6 @@ export default {
 </script>
 
 <style scoped>
-/* Добавляем стили для кнопки профиля */
 .profile-icon-btn {
     background: none;
   border: none;
@@ -264,14 +253,14 @@ export default {
   width: 24px;
   height: 24px;
   position: relative;
-  top: -2px; /* Приподнимаем немного вверх */
+  top: -2px;
 }
 
 .profile-icon-btn:hover {
   opacity: 0.8;
 }
 
-/* Стили для контейнера уведомлений - ТЕПЕРЬ ПО ЦЕНТРУ */
+/* Стили для контейнера уведомлений */
 .notification-container {
   position: fixed;
   top: 20px;
@@ -287,7 +276,6 @@ export default {
   pointer-events: none;
 }
 
-/* Базовые стили для примера */
 .top-header {
   background-color: #f8f8f8;
   height: 99px;
@@ -308,7 +296,6 @@ export default {
 .top-nav-left a{
   text-decoration: none;
   color: rgb(0, 0, 0);
-  /* align-items: center; */
   padding: 40px 0px;
   font-family: "Mulish-Regular-400";
   font-weight: 400;
@@ -316,7 +303,6 @@ export default {
   gap: 33px;
 }
 
-/* Стиль для ссылки новинок */
 .nav-link {
   cursor: pointer;
   text-decoration: none;
@@ -344,10 +330,9 @@ export default {
   gap: 24px;
 }
 
-/* Стили для иконки корзины со счетчиком */
 .cart-icon {
   position: relative;
-  text-decoration: none; /* Убираем подчеркивание у всей ссылки корзины */
+  text-decoration: none;
 }
 
 .cart-badge {
@@ -363,18 +348,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-decoration: none !important; /* Убираем подчеркивание у счетчика */
+  text-decoration: none !important;
   font-family: "Mulish-Regular-400";
   font-weight: 400;
 }
 
-/* Убираем подчеркивание у всех ссылок в верхней навигации */
 .top-nav-left a,
 .top-nav-right a {
   text-decoration: none;
 }
 
-/* Убираем подчеркивание при наведении */
 .top-nav-left a:hover,
 .top-nav-right a:hover {
   text-decoration: none;
@@ -387,9 +370,6 @@ export default {
 }
 
 .main-nav {
-  /* display: flex; */
-  /* justify-content: space-between;
-  align-items: center; */
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -408,7 +388,6 @@ export default {
   text-decoration: none;
 }
 
-
 .footer{
   display: flex;
   background-color: #000000ff;
@@ -416,9 +395,6 @@ export default {
   max-width: 1920px;
   color: #fff;
   padding: 97px 427px 32px 359px;
-
-
-  
 }
 
 .brand-section p{
@@ -466,7 +442,6 @@ export default {
 .link-group {
     display: flex;
     flex-direction: column;
-    
 }
 
 .link-group a{
@@ -482,14 +457,12 @@ export default {
 
 .catalog-section{
   margin: 26px 147px 0 171px;
-
 }
 
 .client-section{
   margin: 26px 190px 0 0;
 }
 
-/* Правая колонка */
 .client-title{
   font-family: "Mulish-Regular-400";
   font-weight: 400;
@@ -500,6 +473,5 @@ export default {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 56px;
-    
 }
 </style>

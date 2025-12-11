@@ -108,45 +108,6 @@ export default {
       await handleRemoveFromCart(itemId)
     }
 
-    // Симуляция отправки письма о заказе
-    const sendOrderEmail = (orderDetails) => {
-      const orderNumber = Math.floor(100000 + Math.random() * 900000);
-      const orderDate = new Date().toLocaleString('ru-RU');
-      
-      let itemsList = '';
-      orderDetails.items.forEach(item => {
-        itemsList += `• ${item.name} - ${item.quantity} шт. × ${item.price} ₽ = ${item.total} ₽\n`;
-      });
-      
-      const emailContent = `
-        Уважаемый покупатель!
-        
-        Ваш заказ №${orderNumber} успешно оформлен.
-        
-        Дата заказа: ${orderDate}
-        
-        Состав заказа:
-        ${itemsList}
-        
-        Итого к оплате: ${orderDetails.total} ₽
-        
-        Статус заказа: Обрабатывается
-        
-        Спасибо за ваш заказ!
-        Мы свяжемся с вами в ближайшее время для уточнения деталей.
-        
-        С уважением,
-        Команда магазина
-      `;
-      
-      console.log('=== ПИСЬМО О ЗАКАЗЕ ===');
-      console.log('Заказ отправлен на email клиента');
-      console.log('Номер заказа:', orderNumber);
-      console.log('Содержимое письма:', emailContent);
-      
-      return orderNumber;
-    }
-
     // Обработка оформления заказа
     const handleCheckout = async () => {
       if (cartItems.value.length === 0) {
@@ -157,25 +118,13 @@ export default {
       isCheckingOut.value = true;
       
       try {
-        // Создаем детали заказа
-        const orderDetails = {
-          items: cartItems.value.map(item => ({
-            name: item.products?.name || 'Товар',
-            quantity: item.quantity,
-            price: item.products?.price || 0,
-            total: calculateItemTotal(item)
-          })),
-          total: totalPrice.value,
-          date: new Date().toISOString()
-        };
+        // Задержка для реалистичности
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Симуляция обработки заказа
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Имитация задержки
+        // Генерируем номер заказа
+        const orderNumber = Math.floor(100000 + Math.random() * 900000);
         
-        // Отправляем "письмо" о заказе
-        const orderNumber = sendOrderEmail(orderDetails);
-        
-        // Используем уведомление
+        // Показываем успешное сообщение
         notify.orderSuccess(orderNumber);
         
         // Очищаем корзину после оформления
