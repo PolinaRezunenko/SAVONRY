@@ -176,7 +176,7 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, inject } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 export default {
@@ -190,6 +190,7 @@ export default {
   emits: ['close'],
   setup(props, { emit }) {
     const activeTab = ref('register')
+    const notify = inject('notify')
     
     // Данные для регистрации
     const registerData = reactive({
@@ -276,9 +277,6 @@ export default {
       console.log('=== ПИСЬМО О РЕГИСТРАЦИИ ===')
       console.log('Получатель:', userData.email)
       console.log('Содержимое письма:', emailContent)
-      
-      // В реальном приложении здесь был бы API вызов:
-      // await emailService.sendRegistrationEmail(userData.email, emailContent)
     }
 
     // Симуляция отправки письма при входе
@@ -304,39 +302,39 @@ export default {
     // Валидация данных регистрации
     const validateRegisterData = () => {
       if (!registerData.firstName.trim()) {
-        alert('Введите имя')
+        notify.error('Ошибка', 'Введите имя')
         return false
       }
       
       if (!registerData.lastName.trim()) {
-        alert('Введите фамилию')
+        notify.error('Ошибка', 'Введите фамилию')
         return false
       }
       
       if (!registerData.email.trim()) {
-        alert('Введите email')
+        notify.error('Ошибка', 'Введите email')
         return false
       }
       
       // Простая валидация email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(registerData.email)) {
-        alert('Введите корректный email')
+        notify.error('Ошибка', 'Введите корректный email')
         return false
       }
       
       if (!registerData.password) {
-        alert('Введите пароль')
+        notify.error('Ошибка', 'Введите пароль')
         return false
       }
       
       if (registerData.password !== registerData.confirmPassword) {
-        alert('Пароли не совпадают')
+        notify.error('Ошибка', 'Пароли не совпадают')
         return false
       }
       
       if (registerData.password.length < 6) {
-        alert('Пароль должен содержать минимум 6 символов')
+        notify.error('Ошибка', 'Пароль должен содержать минимум 6 символов')
         return false
       }
       
@@ -382,11 +380,8 @@ export default {
         // Отправляем письмо о регистрации
         sendRegistrationEmail(userData)
         
-        // Не пытаемся сохранять в таблицу profiles, так как она не существует
-        // Вместо этого просто логируем успешную регистрацию
-        console.log('Пользователь зарегистрирован:', data.user)
-        
-        alert('Регистрация успешна! Проверьте вашу почту для подтверждения.')
+        // Используем уведомление
+        notify.registerSuccess()
         
         // Переключаем на вкладку входа
         activeTab.value = 'login'
@@ -398,7 +393,7 @@ export default {
         
       } catch (error) {
         console.error('Ошибка регистрации:', error)
-        alert(error.message || 'Ошибка регистрации. Попробуйте еще раз.')
+        notify.error('Ошибка регистрации', error.message || 'Ошибка регистрации. Попробуйте еще раз.')
       } finally {
         registerLoading.value = false
       }
@@ -407,7 +402,7 @@ export default {
     // Обработка входа
     const handleLogin = async () => {
       if (!loginData.email || !loginData.password) {
-        alert('Заполните все поля')
+        notify.error('Ошибка', 'Заполните все поля')
         return
       }
       
@@ -417,7 +412,7 @@ export default {
         // Валидация email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(loginData.email)) {
-          alert('Введите корректный email')
+          notify.error('Ошибка', 'Введите корректный email')
           return
         }
         
@@ -434,7 +429,9 @@ export default {
         // Отправляем уведомление о входе
         sendLoginNotification(loginData.email)
         
-        alert('Вход выполнен успешно!')
+        // Используем уведомление
+        notify.loginSuccess()
+        
         closeModal()
         
         // Очищаем форму
@@ -443,7 +440,7 @@ export default {
         
       } catch (error) {
         console.error('Ошибка входа:', error)
-        alert(error.message || 'Ошибка входа. Проверьте email и пароль.')
+        notify.error('Ошибка входа', error.message || 'Ошибка входа. Проверьте email и пароль.')
       } finally {
         loginLoading.value = false
       }
@@ -452,14 +449,14 @@ export default {
     // Обработка восстановления пароля
     const handleForgotPassword = async () => {
       if (!forgotPasswordEmail.value) {
-        alert('Введите email')
+        notify.error('Ошибка', 'Введите email')
         return
       }
       
       // Валидация email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(forgotPasswordEmail.value)) {
-        alert('Введите корректный email')
+        notify.error('Ошибка', 'Введите корректный email')
         return
       }
       
@@ -492,18 +489,18 @@ export default {
         })
 
         if (error) {
-          // Если Supabase возвращает ошибку, все равно показываем успешное сообщение
           console.warn('Supabase email error:', error)
-          // Продолжаем выполнение, так как мы уже сымитировали отправку
         }
         
-        alert('Письмо с инструкциями отправлено на ваш email')
+        // Используем уведомление
+        notify.passwordResetSuccess()
+        
         closeForgotPassword()
         forgotPasswordEmail.value = ''
         
       } catch (error) {
         console.error('Ошибка восстановления пароля:', error)
-        alert(error.message || 'Ошибка отправки письма. Попробуйте еще раз.')
+        notify.error('Ошибка', error.message || 'Ошибка отправки письма. Попробуйте еще раз.')
       } finally {
         forgotPasswordLoading.value = false
       }

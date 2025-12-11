@@ -218,14 +218,14 @@ export default {
 }
 
 .promotions-card-top{
-  height: 350px;
+  height: 270px;
   margin-bottom: 18px;
   position: relative;
 }
 
 .promotions-card-image {
   width: 100%;
-  height: 286px;
+  height: 270px;
   width: 270px;
   margin-bottom: 16px;
   object-fit: cover;

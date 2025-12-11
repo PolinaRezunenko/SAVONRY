@@ -68,7 +68,7 @@
 
 <script>
 import { useCart } from '@/composables/useCart'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, inject } from 'vue'
 import Breadcrumbs from './Breadcrumbs.vue'
 import ProductHits from '@/components/ProductHits.vue'
 
@@ -88,6 +88,7 @@ export default {
     } = useCart()
     
     const isCheckingOut = ref(false)
+    const notify = inject('notify')
 
     const handleImageError = (event) => {
       event.target.src = '@/assets/images/placeholder.jpg'
@@ -149,7 +150,7 @@ export default {
     // Обработка оформления заказа
     const handleCheckout = async () => {
       if (cartItems.value.length === 0) {
-        alert('Корзина пуста');
+        notify.error('Корзина пуста', 'Добавьте товары в корзину перед оформлением заказа');
         return;
       }
       
@@ -174,8 +175,8 @@ export default {
         // Отправляем "письмо" о заказе
         const orderNumber = sendOrderEmail(orderDetails);
         
-        // Показываем сообщение пользователю
-        alert(`Заказ №${orderNumber} успешно оформлен!\n\nДетали заказа отправлены на ваш email.\n\nСпасибо за покупку!`);
+        // Используем уведомление
+        notify.orderSuccess(orderNumber);
         
         // Очищаем корзину после оформления
         cartItems.value.forEach(async item => {
@@ -187,7 +188,7 @@ export default {
         
       } catch (error) {
         console.error('Ошибка при оформлении заказа:', error);
-        alert('Произошла ошибка при оформлении заказа. Попробуйте еще раз.');
+        notify.error('Ошибка оформления', 'Произошла ошибка при оформлении заказа. Попробуйте еще раз.');
       } finally {
         isCheckingOut.value = false;
       }

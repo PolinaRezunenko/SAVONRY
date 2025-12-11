@@ -144,6 +144,7 @@ export default {
 
     const addToCart = async (product) => {
       await handleAddToCart(product)
+      // УБИРАЕМ вызов уведомления - только добавляем в корзину
     }
 
     const handleImageError = (event) => {

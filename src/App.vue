@@ -63,9 +63,6 @@
           </div>
       <p >SAVONRY - бренд высококачественной и эффективной натуральной косметики с чистым растительным составом</p>
       <div class="social-links">
-          <!-- <a href="https://web.whatsapp.com/" class="social-link whatsapp" target="_blank"  rel="noopener noreferrer">
-              <img src="./assets/icons/wapp.svg" alt="whatsapp" >
-          </a> -->
           <a href="https://t.me/ecosavonry" class="social-link telegram" target="_blank">
               <img src="./assets/icons/tg.svg" alt="tg" >
           </a>
@@ -117,6 +114,11 @@
   </div>
 </footer>
 
+<!-- Контейнер для уведомлений - ТЕПЕРЬ ПО ЦЕНТРУ -->
+<div class="notification-container">
+  <NotificationToast ref="notificationRef" />
+</div>
+
 <AuthModal 
     :isVisible="showAuthModal" 
     @close="closeAuthModal" 
@@ -125,16 +127,18 @@
 
 <script>
 import { useCart } from '@/composables/useCart'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AuthModal from '@/components/AuthModal.vue'
-import Banner from '@/components/Banner.vue' // ПРЯМОЙ импорт
+import Banner from '@/components/Banner.vue'
+import NotificationToast from '@/components/NotificationToast.vue'
 
 export default {
   name: 'App',
   components: {
     AuthModal,
-    Banner // Регистрируем компонент напрямую
+    Banner,
+    NotificationToast
   },
   setup() {
     const categories = ref([])
@@ -145,18 +149,81 @@ export default {
     // Состояние для отображения модального окна
     const showAuthModal = ref(false)
     
-    // Текущий пользователь
-    const currentUser = ref(null)
-
-    // // Проверка авторизации при загрузке
-    // const checkAuth = () => {
-    //   try {
-    //     const userJson = localStorage.getItem('savonry_current_user')
-    //     currentUser.value = userJson ? JSON.parse(userJson) : null
-    //   } catch (error) {
-    //     currentUser.value = null
-    //   }
-    // }
+    // Реф для компонента уведомлений
+    const notificationRef = ref(null)
+    
+    // Функция для показа уведомлений
+    const notify = {
+      // Для подписки на рассылку (Banner.vue)
+      subscribeSuccess: () => {
+        if (notificationRef.value) {
+          notificationRef.value.success(
+            'Подписка оформлена!',
+            'Спасибо! Теперь вы будете первыми узнавать о новых продуктах и акциях.'
+          )
+        }
+      },
+      
+      // УБИРАЕМ уведомление при добавлении в корзину
+      // cartSuccess: (productName) => {
+      //   if (notificationRef.value) {
+      //     notificationRef.value.success(
+      //       'Добавлено в корзину',
+      //       `${productName} успешно добавлен в корзину`
+      //     )
+      //   }
+      // },
+      
+      // Для оформления заказа (Cart.vue)
+      orderSuccess: (orderNumber) => {
+        if (notificationRef.value) {
+          notificationRef.value.success(
+            'Заказ оформлен!',
+            `Ваш заказ №${orderNumber} успешно оформлен. Мы свяжемся с вами для подтверждения.`
+          )
+        }
+      },
+      
+      // Для регистрации (AuthModal.vue)
+      registerSuccess: () => {
+        if (notificationRef.value) {
+          notificationRef.value.success(
+            'Регистрация успешна!',
+            'Добро пожаловать! Проверьте вашу почту для подтверждения.'
+          )
+        }
+      },
+      
+      // Для входа (AuthModal.vue)
+      loginSuccess: () => {
+        if (notificationRef.value) {
+          notificationRef.value.success(
+            'Вход выполнен',
+            'Рады снова вас видеть! Теперь вы можете пользоваться всеми возможностями сайта.'
+          )
+        }
+      },
+      
+      // Для восстановления пароля (AuthModal.vue)
+      passwordResetSuccess: () => {
+        if (notificationRef.value) {
+          notificationRef.value.success(
+            'Письмо отправлено',
+            'Инструкции по восстановлению пароля отправлены на ваш email.'
+          )
+        }
+      },
+      
+      // Общие ошибки
+      error: (title, message) => {
+        if (notificationRef.value) {
+          notificationRef.value.error(title, message)
+        }
+      }
+    }
+    
+    // Делаем notify доступным через provide/inject
+    provide('notify', notify)
 
     // Открытие модального окна
     const openAuthModal = () => {
@@ -176,16 +243,13 @@ export default {
       categories,
       cartCount,
       showAuthModal,
+      notificationRef,
       openAuthModal,
       closeAuthModal
     }
   }
 }
 </script>
-
-<style scoped>
-/* Стили без изменений */
-</style>
 
 <style scoped>
 /* Добавляем стили для кнопки профиля */
@@ -205,6 +269,22 @@ export default {
 
 .profile-icon-btn:hover {
   opacity: 0.8;
+}
+
+/* Стили для контейнера уведомлений - ТЕПЕРЬ ПО ЦЕНТРУ */
+.notification-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  max-width: 500px;
+  width: 100%;
+  pointer-events: none;
 }
 
 /* Базовые стили для примера */

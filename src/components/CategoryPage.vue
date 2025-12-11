@@ -204,7 +204,7 @@ export default {
 
 .category-card-top{
   height: auto;
-  margin-bottom: 18px;
+  /* margin-bottom: 18px; */
   position: relative;
 }
 

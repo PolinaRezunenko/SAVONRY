@@ -42,13 +42,14 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 
 export default {
   name: 'Banner',
   setup() {
     const email = ref('')
     const isSubmitting = ref(false)
+    const notify = inject('notify')
     
     // Симуляция отправки письма при подписке
     const sendSubscriptionEmail = (emailAddress) => {
@@ -74,22 +75,19 @@ export default {
       console.log('=== ПОДПИСКА НА РАССЫЛКУ ===');
       console.log('Email для рассылки:', emailAddress);
       console.log('Содержимое письма:', emailContent);
-      
-      // В реальном приложении здесь был бы API вызов:
-      // await newsletterAPI.subscribe(emailAddress);
     }
     
     // Обработка подписки
     const handleSubscription = async () => {
       if (!email.value.trim()) {
-        alert('Пожалуйста, введите email адрес');
+        notify.error('Ошибка', 'Пожалуйста, введите email адрес');
         return;
       }
       
       // Простая валидация email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email.value)) {
-        alert('Пожалуйста, введите корректный email адрес');
+        notify.error('Ошибка', 'Пожалуйста, введите корректный email адрес');
         return;
       }
       
@@ -102,15 +100,15 @@ export default {
         // Отправляем "письмо" о подписке
         sendSubscriptionEmail(email.value);
         
-        // Показываем сообщение пользователю
-        alert(`Спасибо за подписку!\n\nНа адрес ${email.value} отправлено письмо с подтверждением.`);
+        // Используем уведомление вместо alert
+        notify.subscribeSuccess();
         
         // Очищаем поле ввода
         email.value = '';
         
       } catch (error) {
         console.error('Ошибка при подписке:', error);
-        alert('Произошла ошибка при подписке. Попробуйте еще раз.');
+        notify.error('Ошибка', 'Произошла ошибка при подписке. Попробуйте еще раз.');
       } finally {
         isSubmitting.value = false;
       }
